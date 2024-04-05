@@ -46,7 +46,7 @@ To access the demonstration, open `Demo.py` in Python and run this script. This 
 
 The demo run time on a "normal" desktop computer will be less than 5 minutes.
 
-Expected output of the demonstration can be found in `Demo.pdf`.
+Expected output of the demonstration can be found in [`Demo.pdf`](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/Python/Demo.pdf).
 
 ### Instructions for use
 
@@ -64,7 +64,7 @@ The sub-folder `/code/Python/` contains the main Python code for numerosity popu
 * `EMPRISE.py`: routines for dealing with EMPRISE functional MRI data
 * `Figures.py`: routines for generating Figure shown in the EMPRISE paper
 
-When working with Python, open `/code/Python/EMPRISE.py`, edit the study directory ([line 73](https://github.com/SkeideLab/EMPRISE/blob/5139987bb2893bcb4956abbe40dd971f3dd6e18c/code/Python/EMPRISE.py#L73)) and the tools directory ([line 77](https://github.com/SkeideLab/EMPRISE/blob/5139987bb2893bcb4956abbe40dd971f3dd6e18c/code/Python/EMPRISE.py#L77)) and run `import EMPRISE`.
+When working with Python, open `/code/Python/EMPRISE.py`, edit the study directory ([line 73](https://github.com/SkeideLab/EMPRISE-analysis/blob/dedb09d9f06dc9adc0a5afcde639ee8922993dc6/code/Python/EMPRISE.py#L73)) and the tools directory ([line 77](https://github.com/SkeideLab/EMPRISE-analysis/blob/dedb09d9f06dc9adc0a5afcde639ee8922993dc6/code/Python/EMPRISE.py#L77)) and run `import EMPRISE`.
 
 ### NumpRF
 
@@ -208,11 +208,11 @@ This variable must be a list of strings and specifies the figures that you want 
 
 ### LaTeX technical report
 
-The sub-folder `/code/LaTeX/` contains LaTeX source files for a technical report that is intended to be a complete mathematical/statistical description of the currently implemented Python pipeline for numerosity receptive field modelling. The [most recent version](https://github.com/SkeideLab/EMPRISE/blob/JoramSoch/code/LaTeX/NumpRF.pdf) is `/code/LaTeX/NumpRF.pdf`, [previous versions](https://github.com/SkeideLab/EMPRISE/tree/JoramSoch/code/LaTeX/Version_history) can be found in `/code/LaTeX/Version_history/`.
+The sub-folder `/code/LaTeX/` contains LaTeX source files for a technical report that is intended to be a complete mathematical/statistical description of the currently implemented Python pipeline for numerosity receptive field modelling. The [most recent version](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/LaTeX/NumpRF.pdf) is `/code/LaTeX/NumpRF.pdf`, [previous versions](https://github.com/SkeideLab/EMPRISE-analysis/tree/main/code/LaTeX/Version_history) can be found in `/code/LaTeX/Version_history/`.
 
 ### Shell scripts for AFNI
 
-The sub-folder `/code/Shell/` contains Shell scripts that perform AFNI operations which are called from the Python pipeline. More precisely, the AFNI functions `SurfClust` and `ConvertDset` are used for surface clustering of thresholded tuning parameter map obtained from numerosity pRF modelling. This routine exists for FreeSurfer spaces [fsnative](https://github.com/SkeideLab/EMPRISE/blob/JoramSoch/code/Shell/cluster_surface.sh) and [fsaverage](https://github.com/SkeideLab/EMPRISE/blob/JoramSoch/code/Shell/cluster_surface_fsa.sh) and is called from the [EMPRISE](https://github.com/SkeideLab/EMPRISE/blob/JoramSoch/code/Python/EMPRISE.py) module function `threshold_AFNI_cluster`. For more information, see `cluster_surface.sh`:
+The sub-folder `/code/Shell/` contains Shell scripts that perform AFNI operations which are called from the Python pipeline. More precisely, the AFNI functions `SurfClust` and `ConvertDset` are used for surface clustering of thresholded tuning parameter map obtained from numerosity pRF modelling. This routine exists for FreeSurfer spaces [fsnative](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/Shell/cluster_surface.sh) and [fsaverage](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/Shell/cluster_surface_fsa.sh) and is called from the [EMPRISE](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/Python/EMPRISE.py) module function `threshold_AFNI_cluster`. For more information, see `cluster_surface.sh`:
 
 ```bash
 # AFNI surface clustering for NumpRF tuning parameter maps
@@ -231,7 +231,7 @@ The sub-folder `/code/Shell/` contains Shell scripts that perform AFNI operation
 
 ### MATLAB legacy scripts
 
-The sub-folder `/code/MATLAB/` contains MATLAB code that was used in an earlier attempt to employ [BayespRF](https://github.com/pzeidman/BayespRF), an SPM toolbox for Bayesian population receptive field modelling ([Zeidman et al., 2018](https://doi.org/10.1016/j.neuroimage.2017.09.008)). When working with MATLAB, open `/code/MATLAB/project_directories.m`, edit the study directory ([line 10](https://github.com/SkeideLab/EMPRISE/blob/JoramSoch/code/MATLAB/project_directories.m#L10)) and the tools directory ([line 14](https://github.com/SkeideLab/EMPRISE/blob/JoramSoch/code/MATLAB/project_directories.m#L14)) and run the script.
+The sub-folder `/code/MATLAB/` contains MATLAB code that was used in an earlier attempt to employ [BayespRF](https://github.com/pzeidman/BayespRF), an SPM toolbox for Bayesian population receptive field modelling ([Zeidman et al., 2018](https://doi.org/10.1016/j.neuroimage.2017.09.008)). When working with MATLAB, open `/code/MATLAB/project_directories.m`, edit the study directory ([line 10](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/MATLAB/project_directories.m#L10)) and the tools directory ([line 14](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/MATLAB/project_directories.m#L14)) and run the script.
 
 The MATLAB subfolder of the repository contains the following functions:
 
