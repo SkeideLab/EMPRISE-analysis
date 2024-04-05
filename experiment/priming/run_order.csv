@@ -1,0 +1,10 @@
+,col_0,col_1,col_2,col_3,col_4,col_5,col_6,col_7,col_8,col_9
+0,"('word', 'dot')","('word', 'dot')","('word', 'dot')","('word', 'dot')","('word', 'dot')","('word', 'dot')","('word', 'dot')","('word', 'dot')","('word', 'dot')","('word', 'dot')"
+1,"('digit', 'digit')","('digit', 'digit')","('digit', 'digit')","('digit', 'digit')","('digit', 'digit')","('digit', 'digit')","('digit', 'digit')","('digit', 'digit')","('digit', 'digit')","('digit', 'digit')"
+2,"('dot', 'digit')","('dot', 'digit')","('dot', 'digit')","('dot', 'digit')","('dot', 'digit')","('dot', 'digit')","('dot', 'digit')","('dot', 'digit')","('dot', 'digit')","('dot', 'digit')"
+3,"('word', 'digit')","('word', 'digit')","('word', 'digit')","('word', 'digit')","('word', 'digit')","('word', 'digit')","('word', 'digit')","('word', 'digit')","('word', 'digit')","('word', 'digit')"
+4,"('dot', 'dot')","('dot', 'dot')","('dot', 'dot')","('dot', 'dot')","('dot', 'dot')","('dot', 'dot')","('dot', 'dot')","('dot', 'dot')","('dot', 'dot')","('dot', 'dot')"
+5,"('word', 'word')","('word', 'word')","('word', 'word')","('word', 'word')","('word', 'word')","('word', 'word')","('word', 'word')","('word', 'word')","('word', 'word')","('word', 'word')"
+6,"('digit', 'dot')","('digit', 'dot')","('digit', 'dot')","('digit', 'dot')","('digit', 'dot')","('digit', 'dot')","('digit', 'dot')","('digit', 'dot')","('digit', 'dot')","('digit', 'dot')"
+7,"('dot', 'word')","('dot', 'word')","('dot', 'word')","('dot', 'word')","('dot', 'word')","('dot', 'word')","('dot', 'word')","('dot', 'word')","('dot', 'word')","('dot', 'word')"
+8,"('digit', 'word')","('digit', 'word')","('digit', 'word')","('digit', 'word')","('digit', 'word')","('digit', 'word')","('digit', 'word')","('digit', 'word')","('digit', 'word')","('digit', 'word')"
