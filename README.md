@@ -36,13 +36,13 @@ No non-standard hardware is required to run this code.
 
 ### Installation guide
 
-To use this software, install Python, Version 3.10 or higher. Then, install the required Python packages in the specified (or their current) version number using `pip install <package-name>` or `conda install <package-name>` (e.g. if using [Anaconda](https://www.anaconda.com/)). If you're using the function `threshold_AFNI_cluster` from the `EMPRISE` module (unlikely), then [AFNI](https://github.com/afni/afni) has to be installed and available on your Linux path.
+To use this software, install Python, Version 3.10 or higher. Then, install the required Python packages in the specified (or their current) version number using `pip install <package-name>` or `conda install <package-name>` (e.g. if using [Anaconda](https://www.anaconda.com/)). If you're using the function `EMPRISE.threshold_AFNI_cluster` (unlikely), then [AFNI](https://github.com/afni/afni) has to be installed and available on your Linux path.
 
 The typical install time on a "normal" desktop computer will be around 10 minutes.
 
 ### Software demo
 
-To access the demonstration, open `Demo.py` in Python and run this script. This program contains a little demonstration of the numerosity population receptive field (NumpRF) estimation pipeline and consists of the following steps: **1.** specification of simulation settings; **2.** loading of onsets and confounds; **3.** simulation of voxel-wise data; **4.** analysis of voxel-wise data; **5.** processing of simulation results; **6.** visualization of simulation results; **7.** recreation of figures analoguos to manuscript. It contains extensive comments explaining each step.
+To access the demonstration, open [`Demo.py`](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/Python/Demo.py) in Python and run this script. This program contains a little demonstration of the numerosity population receptive field (NumpRF) estimation pipeline and consists of the following steps: **1.** specification of simulation settings; **2.** loading of onsets and confounds; **3.** simulation of voxel-wise data; **4.** analysis of voxel-wise data; **5.** processing of simulation results; **6.** visualization of simulation results; **7.** recreation of figures analoguos to manuscript. It contains extensive comments explaining each step.
 
 The demo run time on a "normal" desktop computer will be less than 5 minutes.
 
@@ -50,7 +50,7 @@ Expected output of the demonstration can be found in [`Demo.pdf`](https://github
 
 ### Instructions for use
 
-The demo uses all four major Python modules from this repository: `PySPMs`, `NumpRF`, `EMPRISE` and `Figures`. Details on how to use those modules can be found below. When the data set is released for public use, figures from the Manuscript and Supplementary Material can be reproduced using code in `Figures.py`.
+The demo uses all four major Python modules from this repository: `PySPMs`, `NumpRF`, `EMPRISE` and `Figures`. Details on how to use those modules can be found below. When the data set is released for public use, figures from the Manuscript and Supplementary Material can be reproduced using code in [`Figures.py`](https://github.com/SkeideLab/EMPRISE-analysis/blob/main/code/Python/Figures.py).
 
 
 ## Python pipeline
