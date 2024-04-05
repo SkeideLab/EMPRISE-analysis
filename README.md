@@ -1,4 +1,4 @@
-# EMPRISE
+# EMPRISE-analysis
 
 **EMPRISE - EMergence of PRecISE numerosity representations in the human brain**
 
@@ -7,22 +7,50 @@ This code belongs to the [EMPRISE project](https://docs.google.com/document/d/1N
 Results on visual and auditory numerosity population receptive field (NumpRF) organization in adult subjects are reported in a paper entitled *"Population coding for visual and auditory quantity in human numerotopic maps"* which is currently in peer-review.
 
 * Paper: *submitted, currently under review*
-* Preprint: TBA
+* Preprint: https://github.com/SkeideLab/preprints/blob/main/EMPRISE/EMPRISE_WP1_Manuscript.pdf
+* Supplement: https://github.com/SkeideLab/preprints/blob/main/EMPRISE/EMPRISE_WP1_Supplement.pdf
+* Code: https://github.com/SkeideLab/EMPRISE-analysis/
 * Data: TBA
-* Code: https://github.com/SkeideLab/EMPRISE/
 
 PsychoPy code for stimulus presentation can be found in `/experiment/`. Functional MRI acquisition parameters can be found in `/documentation/`. The following descriptions mainly address the NumpRF estimation pipeline contained in `/code/`.
 
 
-## Requirements
+## Installation
 
-This code was developed based on the following software:
+### System requirements
 
-* Spyder 5.4.3
-* Python 3.10
+This code requires the following software to be installed:
+
+* [Python 3.10](https://www.python.org/downloads/release/python-3100/)
 * numpy 1.24.3, scipy 1.10.1, pandas 2.1.1, statsmodels 0.14.0
 * matplotlib 3.7.1, surfplot 0.2.0, nibabel 5.1.0
-* [AFNI](https://github.com/afni/afni) 23.2.03
+* [AFNI](https://github.com/afni/afni) 23.2.03 (only if using `EMPRISE.threshold_AFNI_cluster`)
+
+This code has been tested with, but is not dependent on the following software:
+
+* [Microsoft Windows 10.0.19045](https://learn.microsoft.com/en-us/windows/release-health/release-information)
+* [Linux 5.10.0-28-amd64](https://packages.debian.org/bullseye/linux-image-5.10.0-28-amd64)
+* [Spyder 5.4.3](https://github.com/spyder-ide/spyder/releases/tag/v5.4.3)
+
+No non-standard hardware is required to run this code.
+
+### Installation guide
+
+To use this software, install Python, Version 3.10 or higher. Then, install the required Python packages in the specified (or their current) version number using `pip install <package-name>` or `conda install <package-name>` (e.g. if using [Anaconda](https://www.anaconda.com/)). If you're using the function `threshold_AFNI_cluster` from the `EMPRISE` module (unlikely), then [AFNI](https://github.com/afni/afni) has to be installed and available on your Linux path.
+
+The typical install time on a "normal" desktop computer will be around 10 minutes.
+
+### Software demo
+
+To access the demonstration, open `Demo.py` in Python and run this script. This program contains a little demonstration of the numerosity population receptive field (NumpRF) estimation pipeline and consists of the following steps: **1.** specification of simulation settings; **2.** loading of onsets and confounds; **3.** simulation of voxel-wise data; **4.** analysis of voxel-wise data; **5.** processing of simulation results; **6.** visualization of simulation results; **7.** recreation of figures analoguos to manuscript. It contains extensive comments explaining each step.
+
+The demo run time on a "normal" desktop computer will be less than 5 minutes.
+
+Expected output of the demonstration can be found in `Demo.pdf`.
+
+### Instructions for use
+
+The demo uses all four major Python modules from this repository: `PySPMs`, `NumpRF`, `EMPRISE` and `Figures`. Details on how to use those modules can be found below. When the data set is released for public use, figures from the Manuscript and Supplementary Material can be reproduced using code in `Figures.py`.
 
 
 ## Python pipeline
@@ -129,8 +157,7 @@ verts, trias = mod.threshold_AFNI_cluster(crit, mesh)
 So, in order to analyze the data from all subjects and all sessions, one could e.g. run the following code:
 
 ```python
-# import modules
-import NumpRF
+# load modules
 import EMPRISE
 
 # define analysis
