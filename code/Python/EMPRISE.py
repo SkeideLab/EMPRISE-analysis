@@ -43,6 +43,12 @@ Joram Soch, MPI Leipzig <soch@cbs.mpg.de>
 2024-03-11, 15:34: run_GLM_analysis_group
 2024-03-11, 16:44: threshold_SPM_group
 2024-03-11, 17:37: refactoring
+2024-04-04, 10:22: get_onsets, get_confounds
+2024-05-14, 15:03: analyze_numerosity
+2024-05-21, 10:35: calculate_Rsq
+2024-06-25, 15:18: threshold_maps, threshold_and_cluster
+2024-06-27, 13:39: threshold_maps, threshold_and_cluster
+2024-07-01, 18:11: analyze_numerosity
 """
 
 
@@ -68,7 +74,7 @@ at_MPI = os.getcwd().startswith('/data/')
 if at_MPI:
     stud_dir = r'/data/pt_02495/emprise7t/'
     data_dir = stud_dir
-    deri_out = r'/data/tu_soch/EMPRISE/data/derivatives/'
+    deri_out = r'/data/pt_02495/emprise7t/derivatives/'
 else:
     stud_dir = r'C:/Joram/projects/MPI/EMPRISE/'
     data_dir = stud_dir + 'data/'
@@ -107,13 +113,14 @@ blocks_per_epoch = int(b/num_epochs)
 
 # specify thresholding parameters
 #-----------------------------------------------------------------------------#
-dAIC_thr = 0                    # AIC diff must be larger than this
-dBIC_thr = 0                    # BIC diff must be larger than this
-Rsq_def  = 0.3                  # R-squared must be larger than this
-mu_thr   =[1, 5]                # numerosity must be inside this range
-fwhm_thr =[0, 24]               # tuning width must be inside this range
-beta_thr =[0, np.inf]           # scaling parameter must be inside this range
-crit_def = 'Rsqmb'              # default thresholding option (see "threshold_maps")
+dAIC_thr  = 0                   # AIC diff must be larger than this
+dBIC_thr  = 0                   # BIC diff must be larger than this
+Rsq_def   = 0.3                 # R-squared must be larger than this
+alpha_def = 0.05                # p-value must be smaller than this
+mu_thr    =[1, 5]               # numerosity must be inside this range
+fwhm_thr  =[0, 24]              # tuning width must be inside this range
+beta_thr  =[0, np.inf]          # scaling parameter must be inside this range
+crit_def  = 'Rsqmb'             # default thresholding option (see "threshold_maps")
 
 # specify default covariates
 #-----------------------------------------------------------------------------#
@@ -656,31 +663,37 @@ class Model(Session):
     
     # function: results file
     #-------------------------------------------------------------------------#
-    def get_results_file(self, hemi='L'):
+    def get_results_file(self, hemi='L', fold='all'):
         """
         Get Results Filename for Model
         res_file = mod.get_results_file(hemi)
         
             hemi     - string; brain hemisphere (e.g. "L")
+            fold     - string; data subset used ("all", "odd" or "even" runs)
         
             res_file - string; results file into which the model is written
         """
         
         # create filename
         mod_dir  = self.get_model_dir()
-        res_file = mod_dir  + '/sub-' + self.sub + '_ses-' + self.ses + '_model-' + self.model + \
-                             '_hemi-' + hemi + '_space-' + self.space + '_' + 'numprf.mat'
+        filepath = mod_dir  + '/sub-' + self.sub + '_ses-' + self.ses + '_model-' + self.model + \
+                             '_hemi-' + hemi + '_space-' + self.space + '_'
+        if fold in ['odd', 'even']:
+            filepath = filepath + 'runs-' + fold + '_'
+        res_file = filepath + 'numprf.mat'
         return res_file
     
     # function: calculate runs/scans
     #-------------------------------------------------------------------------#
-    def calc_runs_scans(self):
+    def calc_runs_scans(self, fold='all'):
         """
         Calculate Number of Runs and Scans
-        r0, n0 = mod.calc_runs_scans()
+        r0, n0 = mod.calc_runs_scans(fold)
         
-            r0 - int; number of runs analyzed, depending on averaging across runs
-            n0 - int; number of scans per run, depending on averaging across epochs
+            fold - string; data subset used ("all", "odd", "even" runs or "cv")
+        
+            r0   - int; number of runs analyzed, depending on averaging across runs
+            n0   - int; number of scans per run, depending on averaging across epochs
         """
         
         # load results file
@@ -691,7 +704,9 @@ class Model(Session):
         r0  = 0
         for run in runs:
             filename = self.get_events_tsv(run)
-            if os.path.isfile(filename): r0 = r0 + 1
+            if os.path.isfile(filename):
+                if (fold == 'all') or (fold == 'cv') or (fold == 'odd'  and run % 2 == 1) or (fold == 'even' and run % 2 == 0):
+                    r0 = r0 + 1
         # Explanation: This is the number of available runs. Usually, there
         # are 8 runs, but in case of removed data, there can be fewer runs.
         
@@ -728,24 +743,29 @@ class Model(Session):
     
     # function: analyze numerosities
     #-------------------------------------------------------------------------#
-    def analyze_numerosity(self, avg=[True, False], corr='iid', order=1, ver='V2'):
+    def analyze_numerosity(self, avg=[True, False], corr='iid', order=1, ver='V2', sh=False):
         """
         Estimate Numerosities and FWHMs for Surface-Based Data
-        results = mod.analyze_numerosity(avg, corr, order, ver)
+        results = mod.analyze_numerosity(avg, corr, order, ver, sh)
         
             avg     - list of bool; see "NumpRF.estimate_MLE" (default: [True, False])
             corr    - string; see "NumpRF.estimate_MLE" (default: "iid")
             order   - int; see "NumpRF.estimate_MLE" (default: 1)
             ver     - string; version identifier (default: "V2")
+            sh      - bool; split-half estimation (default: False)
             
-            results - dict of strings; results filenames
+            results - dict of dicts; results filenames
             o L     - results for left hemisphere
             o R     - results for right hemisphere
             
-        results = mod.analyze_numerosity(avg, corr, order, ver) loads the
+        results = mod.analyze_numerosity(avg, corr, order, ver, sh) loads the
         surface-based pre-processed data belonging to model mod, estimates
-        tuning parameters using settings avg, corr, order, ver and saves
+        tuning parameters using settings avg, corr, order, ver, sh and saves
         results into a single-subject results directory.
+        
+        The input parameter "sh" (default: False) specifies whether parameters
+        are estimated in a split-half sense (if True: separately for odd and
+        even runs) or across all runs (if False: across all available runs).
         
         The input parameter "ver" (default: "V2") controls which version of
         the routine is used (for details, see "NumpRF.estimate_MLE"):
@@ -755,6 +775,11 @@ class Model(Session):
                       fwhm_grid = {0.3,...,18, 24,48,96,192} (64)
             V2:       mu_grid   = {0.8,...,5.2, 20} (90)
                       sig_grid  = {0.05,...,3} (60)
+            V2-lin:   mu_grid   = {0.8,...,5.2, 20} (90)
+                      sig_grid  = {0.05,...,3} (60)
+        
+        Note: "sig_grid" is calculated into FWHM values, if ver is "V2", and
+        into linear sigma values, if ver is "V2-lin" (see "NumpRF.estimate_MLE").
         
         Note: "analyze_numerosity" uses the results dictionary keys "L" and "R"
         which are identical to the hemisphere labels used by fMRIprep.
@@ -787,13 +812,29 @@ class Model(Session):
                                         10*np.power(2, np.arange(0,8))))
             fwhm_grid = np.concatenate((np.arange(0.3, 18.3, 0.3), \
                                         24*np.power(2, np.arange(0,4))))
-        elif ver == 'V2':
+        elif ver == 'V2' or ver == 'V2-lin':
             mu_grid   = np.concatenate((np.arange(0.80, 5.25, 0.05), \
                                         np.array([20])))
             sig_grid  = np.arange(0.05, 3.05, 0.05)
         else:
-            err_msg = 'Unknown version ID: "{}". Version must be "V0" or "V1" or "V2".'
+            err_msg = 'Unknown version ID: "{}". Version must be "V0" or "V1" or "V2"/"V2-lin".'
             raise ValueError(err_msg.format(ver))
+        
+        # specify folds
+        i = -1                              # slice index (3rd dim)
+        if not sh: folds = {'all': []}      # all runs vs. split-half
+        else:      folds = {'odd': [], 'even': []}
+        for run in runs:                    # for all possible runs
+            filename = self.get_events_tsv(run)
+            if os.path.isfile(filename):    # if data from this run exist
+                i = i + 1                   # increase slice index
+                if not sh:
+                    folds['all'].append(i)  # add slice to all runs
+                else:
+                    if run % 2 == 1:        # add slice to odd runs
+                        folds['odd'].append(i)
+                    else:                   # add slice to even runs
+                        folds['even'].append(i)
         
         # part 2: analyze both hemispheres
         #---------------------------------------------------------------------#
@@ -809,68 +850,221 @@ class Model(Session):
             V    = M.size
             print('successful!')
             
-            # analyze data
-            print('   - Estimating parameters ... ', end='\n')
-            ds = NumpRF.DataSet(Y, ons, dur, stim, TR, X_c)
-            start_time = time.time()
-            if ver == 'V0':
-                mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =\
-                    ds.estimate_MLE_rgs(avg=avg, corr=corr, order=order, mu_grid=mu_grid, fwhm_grid=fwhm_grid)
-            elif ver == 'V1':
-                mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =\
-                    ds.estimate_MLE(avg=avg, corr=corr, order=order, mu_grid=mu_grid, fwhm_grid=fwhm_grid)
-            elif ver == 'V2':
-                mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =\
-                    ds.estimate_MLE(avg=avg, corr=corr, order=order, mu_grid=mu_grid, sig_grid=sig_grid)
-            if True:
-                k_est, k_null, k_const = \
-                    ds.free_parameters(avg, corr, order)
-            end_time   = time.time()
-            difference = end_time - start_time
-            del start_time, end_time
-            
-            # save results (mat-file)
-            sett = str(avg[0])+','+str(avg[1])+','+str(corr)+','+str(order)
-            print('\n-> Model "{}", Settings "{}":'.format(self.model, sett))
-            print('   - Saving results file ... ', end='')
-            filepath = mod_dir + '/sub-' + self.sub + '_ses-' + self.ses + \
-                                 '_model-' + self.model + '_hemi-' + hemi + '_space-' + self.space + '_'
-            results[hemi] = filepath + 'numprf.mat'
-            res_dict = {'mod_dir': mod_dir, 'settings': {'avg': avg, 'corr': corr, 'order': order}, \
-                        'mu_est':  mu_est,  'fwhm_est': fwhm_est, 'beta_est':  beta_est, \
-                        'MLL_est': MLL_est, 'MLL_null': MLL_null, 'MLL_const': MLL_const, \
-                        'k_est':   k_est,   'k_null':   k_null,   'k_const':   k_const, \
-                        'corr_est':corr_est,'time':     difference}
-            sp.io.savemat(results[hemi], res_dict)
-            print('successful!')
-            del sett, res_dict
-            
-            # save results (surface images)
-            para_est = {'mu': mu_est, 'fwhm': fwhm_est, 'beta': beta_est}
-            for name in para_est.keys():
-                print('   - Saving "{}" image ... '.format(name), end='')
-                para_map    = np.zeros(V, dtype=np.float32)
-                para_map[M] = para_est[name]
-                surface     = nib.load(self.get_bold_gii(1,hemi,self.space))
-                filename    = filepath + name + '.surf.gii'
-                para_img    = save_surf(para_map, surface, filename)
-                print('successful!')
-            del para_est, para_map, surface, filename, para_img
+            # analyze all folds
+            results[hemi] = {}
+            for fold in folds:
+                
+                # if fold contains runs
+                num_runs = len(folds[fold])
+                if num_runs > 0:
+                
+                    # get fold data
+                    print('\n-> Runs "{}" ({} run{}: slice{} {}):'. \
+                          format(fold, num_runs, ['','s'][int(num_runs>1)], \
+                                 ['','s'][int(num_runs>1)], ','.join([str(i) for i in folds[fold]])))
+                    print('   - Estimating parameters ... ', end='\n')
+                    Y_f    = Y[:,:,folds[fold]]
+                    ons_f  = [ons[i]  for i in folds[fold]]
+                    dur_f  = [dur[i]  for i in folds[fold]]
+                    stim_f = [stim[i] for i in folds[fold]]
+                    Xc_f   = X_c[:,:,folds[fold]]
+                    
+                    # analyze data
+                    ds = NumpRF.DataSet(Y_f, ons_f, dur_f, stim_f, TR, Xc_f)
+                    start_time = time.time()
+                    if ver == 'V0':
+                        mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =\
+                            ds.estimate_MLE_rgs(avg=avg, corr=corr, order=order, mu_grid=mu_grid, fwhm_grid=fwhm_grid)
+                    elif ver == 'V1':
+                        mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =\
+                            ds.estimate_MLE(avg=avg, corr=corr, order=order, mu_grid=mu_grid, fwhm_grid=fwhm_grid)
+                    elif ver == 'V2':
+                        mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =\
+                            ds.estimate_MLE(avg=avg, corr=corr, order=order, mu_grid=mu_grid, sig_grid=sig_grid, lin=False)
+                    elif ver == 'V2-lin':
+                        mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =\
+                            ds.estimate_MLE(avg=avg, corr=corr, order=order, mu_grid=mu_grid, sig_grid=sig_grid, lin=True)
+                    if True:
+                        k_est, k_null, k_const = \
+                            ds.free_parameters(avg, corr, order)
+                    end_time   = time.time()
+                    difference = end_time - start_time
+                    del start_time, end_time
+                    
+                    # save results (mat-file)
+                    sett = str(avg[0])+','+str(avg[1])+','+str(corr)+','+str(order)
+                    print('\n-> Runs "{}", Model "{}", Settings "{}":'.
+                          format(fold, self.model, sett))
+                    print('   - Saving results file ... ', end='')
+                    filepath = mod_dir  + '/sub-' + self.sub + '_ses-' + self.ses + \
+                                          '_model-' + self.model + '_hemi-' + hemi + '_space-' + self.space + '_'
+                    if sh: filepath = filepath + 'runs-' + fold + '_'
+                    results[hemi][fold] = filepath + 'numprf.mat'
+                    res_dict = {'mod_dir': mod_dir, 'settings': {'avg': avg, 'corr': corr, 'order': order}, \
+                                'mu_est':  mu_est,  'fwhm_est': fwhm_est, 'beta_est':  beta_est, \
+                                'MLL_est': MLL_est, 'MLL_null': MLL_null, 'MLL_const': MLL_const, \
+                                'k_est':   k_est,   'k_null':   k_null,   'k_const':   k_const, \
+                                'corr_est':corr_est,'version':  ver,      'time':      difference}
+                    sp.io.savemat(results[hemi][fold], res_dict)
+                    print('successful!')
+                    del sett, res_dict
+                    
+                    # save results (surface images)
+                    para_est = {'mu': mu_est, 'fwhm': fwhm_est, 'beta': beta_est}
+                    for name in para_est.keys():
+                        print('   - Saving "{}" image ... '.format(name), end='')
+                        para_map    = np.zeros(V, dtype=np.float32)
+                        para_map[M] = para_est[name]
+                        surface     = nib.load(self.get_bold_gii(1,hemi,self.space))
+                        filename    = filepath + name + '.surf.gii'
+                        para_img    = save_surf(para_map, surface, filename)
+                        print('successful!')
+                    del para_est, para_map, surface, filename, para_img
         
         # return results filename
         return results
     
+    # function: calculate R-squared maps
+    #-------------------------------------------------------------------------#
+    def calculate_Rsq(self, folds=['all', 'odd', 'even', 'cv']):
+        """
+        Calculate R-Squared Maps for Numerosity Model
+        maps = mod.calculate_Rsq(folds)
+        
+            folds - list of strings; runs for which to calculate
+            
+            maps  - dict of dicts; calculated R-squared maps
+            o all  - dict of strings; all runs
+            o odd  - dict of strings; odd runs
+            o even - dict of strings; even runs
+            o cv   - dict of strings; cross-validated R-squared
+              o left  - R-squared map for left hemisphere
+              o right - R-squared map for right hemisphere
+        
+        
+        maps = mod.calculate_Rsq(folds) loads results from numerosity analysis
+        and calculates R-squared maps for all runs in folds.
+        
+        Note: "calculate_Rsq" uses the results dictionary keys "left" and "right"
+        which are identical to the hemisphere labels used by surfplot.
+        """
+        
+        # part 1: prepare calculations
+        #---------------------------------------------------------------------#
+        print('\n\n-> Subject "{}", Session "{}", Model "{}":'.format(self.sub, self.ses, self.model))
+        mod_dir = self.get_model_dir()
+        
+        # specify slices
+        i = -1                              # slice index (3rd dim)
+        slices = {'all': [], 'odd': [], 'even': []}
+        for run in runs:                    # for all possible runs
+            filename = self.get_events_tsv(run)
+            if os.path.isfile(filename):    # if data from this run exist
+                i = i + 1                   # increase slice index
+                slices['all'].append(i)
+                if run % 2 == 1: slices['odd'].append(i)
+                else:            slices['even'].append(i)
+        
+        # part 2: analyze both hemispheres
+        #---------------------------------------------------------------------#
+        hemis = {'L': 'left', 'R': 'right'}
+        maps  = {}
+        for fold in folds: maps[fold] = {}
+        
+        # for both hemispheres
+        for hemi in hemis.keys():
+            print('   - {} hemisphere:'.format(hemis[hemi]))
+            
+            # for all folds
+            for fold in folds:
+                
+                # load analysis results
+                filepath = mod_dir + '/sub-' + self.sub + '_ses-' + self.ses + \
+                                     '_model-' + self.model + '_hemi-' + hemi + '_space-' + self.space + '_'
+                if fold in ['odd', 'even']:
+                    filepath = filepath + 'runs-' + fold + '_'
+                res_file = filepath + 'numprf.mat'
+                mu_map   = filepath + 'mu.surf.gii'
+                NpRF     = sp.io.loadmat(res_file)
+                surface  = nib.load(mu_map)
+                mask     = surface.darrays[0].data != 0
+                
+                # calculate R-squared (all, odd, even)
+                avg   = list(NpRF['settings']['avg'][0,0][0,:])
+                MLL1  = np.squeeze(NpRF['MLL_est'])
+                MLL00 = np.squeeze(NpRF['MLL_const'])
+                r0,n0 = self.calc_runs_scans(fold)
+                n1    = r0*n0
+                Rsq   = NumpRF.MLL2Rsq(MLL1, MLL00, n1)
+                
+                # calculate R-squared (cross-validated)
+                if fold == 'cv':
+                    
+                    # load session data
+                    print('     - Calculating split-half cross-validated R-squared ... ')
+                    Y, M           = self.load_mask_data(hemi)
+                    Y              = standardize_signals(Y)
+                    X_c            = self.get_confounds(covs)
+                    X_c            = standardize_confounds(X_c)
+                    ons, dur, stim = self.get_onsets()
+                    ons, dur, stim = onsets_trials2blocks(ons, dur, stim, 'closed')
+                    
+                    # cycle through CV folds
+                    sets   = ['odd', 'even']
+                    oosRsq = np.zeros((len(sets),Rsq.size))
+                    for i in range(len(sets)):
+                        
+                        # load parameters from this fold
+                        res_file = self.get_results_file(hemi, sets[i])
+                        NpRF     = sp.io.loadmat(res_file)
+                        mu1      = np.squeeze(NpRF['mu_est'])
+                        fwhm1    = np.squeeze(NpRF['fwhm_est'])
+                        beta1    = np.squeeze(NpRF['beta_est'])
+                        
+                        # get data from the other fold
+                        xfold  = sets[1-i]
+                        Y2     = Y[:,:,slices[xfold]]
+                        ons2   = [ons[i]  for i in slices[xfold]]
+                        dur2   = [dur[i]  for i in slices[xfold]]
+                        stim2  = [stim[i] for i in slices[xfold]]
+                        Xc2    = X_c[:,:,slices[xfold]]
+                        
+                        # obtain fit across folds
+                        ds          = NumpRF.DataSet(Y2, ons2, dur2, stim2, TR, Xc2)
+                        oosRsq[i,:] = ds.calculate_Rsq(mu1, fwhm1, beta1, avg)
+                        
+                    # calculate cross-validated R-squared
+                    Rsq = np.mean(oosRsq, axis=0)
+                    print()
+                
+                # threshold tuning maps
+                print('     - Saving R-squared image for {} runs ... '.format(fold), end='')
+                para_map       = np.zeros(mask.size, dtype=np.float32)
+                para_map[mask] = Rsq
+                if fold in ['all', 'odd', 'even']:
+                    filename   = filepath + 'Rsq.surf.gii'
+                else:
+                    filename   = filepath + 'cvRsq.surf.gii'
+                para_img       = save_surf(para_map, surface, filename)
+                maps[fold][hemis[hemi]] = filename
+                print('successful!')
+                del para_map, surface, filename, para_img
+                
+        # return results filename
+        return maps
+    
     # function: threshold tuning maps
     #-------------------------------------------------------------------------#
-    def threshold_maps(self, crit='Rsqmb'):
+    def threshold_maps(self, crit='Rsqmb', cv=True):
         """
         Threshold Numerosity, FWHM and Scaling Maps based on Criterion
         maps = mod.threshold_maps(crit)
         
             crit - string; criteria used for thresholding maps
                           (default: "Rsqmb"; see below for details)
+            cv   - bool; indicating whether cross-validated R-squared is used
             
-            maps - dict of dicts; thresholding tuning maps
+            maps - dict of dicts; thresholded tuning maps
             o mu   - dict of strings; estimated numerosity maps
             o fwhm - dict of strings; FWHM tuning widths maps
             o beta - dict of strings; scaling parameter maps
@@ -888,7 +1082,9 @@ class Model(Session):
         o "m"  : value of numerosity estimate within specified range
         o "f"  : value of tuning width estimate within specified range
         o "b"  : value of scaling parameter estimate within specified range
-        o ","  : preceeding user-defined R^2 threshold (e.g. "Rsq,0.25")
+        o ","  : preceeding user-defined R^2 threshold (e.g. "Rsqmb,0.25")
+        o "p=" : specifying user-defined signifance level (e.g. "Rsq,p=0.05")
+        o "BHS": specifying multiple comparison correction (e.g. "Rsq,p=0.05B")
         
         Note: "threshold_maps" uses the results dictionary keys "left" and "right"
         which are identical to the hemisphere labels used by surfplot.
@@ -902,11 +1098,26 @@ class Model(Session):
         # get runs and scans
         r0, n0 = self.calc_runs_scans()
         n1     = r0*n0          # effective number of observations in model
+        p1     = [4,2][int(cv)] # number of explanatory variables used for R^2
+        
+        # extract thresholds
+        Rsq_thr = Rsq_def
+        if ',' in crit:
+            if 'p=' in crit:
+                if crit[-1] in ['B', 'S', 'H']:
+                    alpha = float(crit[(crit.find('p=')+2):-1])
+                    meth  = crit[-1]
+                else:
+                    alpha = float(crit[(crit.find('p=')+2):])
+                    meth  = ''
+            else:
+                Rsq_thr = float(crit.split(',')[1])
         
         # part 2: threshold both hemispheres
         #---------------------------------------------------------------------#
         hemis = {'L': 'left', 'R': 'right'}
         maps  = {'mu': {}, 'fwhm': {}, 'beta': {}, 'Rsq': {}}
+        if cv: maps['cvRsq'] = maps.pop('Rsq')
         for hemi in hemis.keys():
             
             # load numerosity map
@@ -923,20 +1134,29 @@ class Model(Session):
             mu    = np.squeeze(NpRF['mu_est'])
             fwhm  = np.squeeze(NpRF['fwhm_est'])
             beta  = np.squeeze(NpRF['beta_est'])
-            MLL1  = np.squeeze(NpRF['MLL_est'])
-            MLL0  = np.squeeze(NpRF['MLL_null'])
-            MLL00 = np.squeeze(NpRF['MLL_const'])
-            k1    = NpRF['k_est'][0,0]
-            k0    = NpRF['k_null'][0,0]
+            
+            # if CV, load cross-validated R^2
+            if cv:
+                Rsq_map = filepath + 'cvRsq.surf.gii'
+                cvRsq   = nib.load(Rsq_map).darrays[0].data
+                Rsq     = cvRsq[mask]
+                
+            # otherwise, calculate total R^2
+            else:
+                MLL1  = np.squeeze(NpRF['MLL_est'])
+                MLL0  = np.squeeze(NpRF['MLL_null'])
+                MLL00 = np.squeeze(NpRF['MLL_const'])
+                k1    = NpRF['k_est'][0,0]
+                k0    = NpRF['k_null'][0,0]
+                Rsq   = NumpRF.MLL2Rsq(MLL1, MLL00, n1)
+                # See: https://statproofbook.github.io/P/rsq-mll
+                dAIC  = (-2*MLL0 + 2*k0) - (-2*MLL1 + 2*k1)
+                # See: https://statproofbook.github.io/P/mlr-aic
+                dBIC  = (-2*MLL0 + k0*np.log(n1)) - (-2*MLL1 + k1*np.log(n1))
+                # See: https://statproofbook.github.io/P/mlr-bic
             
             # compute quantities for thresholding
             print('     - Applying threshold criteria "{}" ... '.format(crit), end='')
-            dAIC  = (-2*MLL0 + 2*k0) - (-2*MLL1 + 2*k1)
-            # See: https://statproofbook.github.io/P/mlr-aic
-            dBIC  = (-2*MLL0 + k0*np.log(n1)) - (-2*MLL1 + k1*np.log(n1))
-            # See: https://statproofbook.github.io/P/mlr-bic
-            Rsq   = NumpRF.MLL2Rsq(MLL1, MLL00, n1)
-            # See: https://statproofbook.github.io/P/rsq-mll
             ind_m = np.logical_or(mu<mu_thr[0], mu>mu_thr[1])
             ind_f = np.logical_or(fwhm<fwhm_thr[0], fwhm>fwhm_thr[1])
             ind_b = np.logical_or(beta<beta_thr[0], beta>beta_thr[1])
@@ -948,10 +1168,10 @@ class Model(Session):
             if 'BIC' in crit:
                 ind = np.logical_or(ind, dBIC<dBIC_thr)
             if 'Rsq' in crit:
-                Rsq_thr = Rsq_def
-                if ',' in crit:
-                    Rsq_thr = float(crit.split(',')[1])
-                ind = np.logical_or(ind, Rsq<Rsq_thr)
+                if not 'p=' in crit:
+                    ind = np.logical_or(ind, Rsq < Rsq_thr)
+                else:
+                    ind = np.logical_or(ind, ~NumpRF.Rsqsig(Rsq, n1, p1, alpha, meth))
             if 'm' in crit:
                 ind = np.logical_or(ind, ind_m)
             if 'f' in crit:
@@ -962,6 +1182,7 @@ class Model(Session):
             
             # threshold tuning maps
             para_est = {'mu': mu, 'fwhm': fwhm, 'beta': beta, 'Rsq': Rsq}
+            if cv: para_est['cvRsq'] = para_est.pop('Rsq')
             for name in para_est.keys():
                 print('     - Saving thresholded "{}" image ... '.format(name), end='')
                 para_map       = np.zeros(mask.size, dtype=np.float32)
@@ -1030,7 +1251,7 @@ class Model(Session):
                 caxis = [0,4]
                 cmap  = 'hot'
                 clabel= 'estimated scaling parameter'
-            elif name == 'Rsq':
+            elif name == 'Rsq' or name == 'cvRsq':
                 caxis = [Rsq_thr,1]
                 cmap  = 'hot'
                 clabel= 'variance explained'
@@ -1038,16 +1259,16 @@ class Model(Session):
             # display and save plot
             figs[name] = plot_surf(maps[name], mesh_files, sulc_files, caxis, cmap, clabel)
             if crit:
-                figs[name].savefig(filepath+name+'_thr-'+crit+'.png', dpi=200)
+                figs[name].savefig(filepath+name+'_thr-'+crit+'.png', dpi=150)
             elif img:
-                figs[name].savefig(filepath+img+'.png', dpi=200)
+                figs[name].savefig(filepath+img+'.png', dpi=150)
         
         # return results filename
         return figs
     
     # function: threshold and cluster
     #-------------------------------------------------------------------------#
-    def threshold_and_cluster(self, hemi='L', crit='Rsqmb', mesh='pial', ctype='coords', d=3, k=100):
+    def threshold_and_cluster(self, hemi='L', crit='Rsqmb', mesh='pial', ctype='coords', d=3, k=100, cv=True):
         """
         Threshold and Cluster Vertices from Surface-Based Results
         verts, trias = mod.threshold_and_cluster(hemi, crit, mesh, ctype, d, k)
@@ -1058,6 +1279,7 @@ class Model(Session):
             ctype - string; method of clustering ("coords" or "edges")
             d     - float; maximum distance of vertex to cluster
             k     - int; minimum number of vertices in cluster
+            cv    - bool; indicating use of cross-validated R-squared
             
             verts - array; v x 9 matrix of vertex properties
             o 1st           column: vertex index
@@ -1068,7 +1290,7 @@ class Model(Session):
             trias - array; t x 3 matrix of surface triangles
             o 1st, 2nd, 3rd column: vertex indices
         
-        verts, trias = mod.threshold_and_cluster(hemi, crit, mesh, ctype, d, k)
+        verts, trias = mod.threshold_and_cluster(hemi, crit, mesh, ctype, d, k, cv)
         loads estimated tuning parameter maps, thresholds them according to
         some criteria, clusters them according to some clustering settings
         and returns tabular data from all supra-threshold vertices.
@@ -1109,6 +1331,7 @@ class Model(Session):
         k1    = NpRF['k_est'][0,0]
         k0    = NpRF['k_null'][0,0]
         n1    = np.prod(self.calc_runs_scans())
+        p1    = [4,2][int(cv)]
         
         # calculate thresholding quantities
         dAIC       = np.nan * np.ones(v, dtype=np.float32)
@@ -1121,6 +1344,19 @@ class Model(Session):
         ind_f      = np.logical_or(fwhm<fwhm_thr[0], fwhm>fwhm_thr[1])
         ind_b      = np.logical_or(beta<beta_thr[0], beta>beta_thr[1])
         
+        # extract thresholds for R-squared
+        Rsq_thr = Rsq_def
+        if ',' in crit:
+            if 'p=' in crit:
+                if crit[-1] in ['B', 'S', 'H']:
+                    alpha = float(crit[(crit.find('p=')+2):-1])
+                    meth  = crit[-1]
+                else:
+                    alpha = float(crit[(crit.find('p=')+2):])
+                    meth  = ''
+            else:
+                Rsq_thr = float(crit.split(',')[1])
+        
         # apply conditions for exclusion
         ind = mu > np.inf
         if 'AIC' in crit:
@@ -1128,10 +1364,10 @@ class Model(Session):
         if 'BIC' in crit:
             ind = np.logical_or(ind, dBIC<dBIC_thr)
         if 'Rsq' in crit:
-            Rsq_thr = Rsq_def
-            if ',' in crit:
-                Rsq_thr = float(crit.split(',')[1])
-            ind = np.logical_or(ind, Rsq<Rsq_thr)
+            if not 'p=' in crit:
+                ind = np.logical_or(ind, Rsq < Rsq_thr)
+            else:
+                ind = np.logical_or(ind, ~NumpRF.Rsqsig(Rsq, n1, p1, alpha, meth))
         if 'm' in crit:
             ind = np.logical_or(ind, ind_m)
         if 'f' in crit:
@@ -1211,13 +1447,14 @@ class Model(Session):
     
     # function: threshold, AFNI, cluster
     #-------------------------------------------------------------------------#
-    def threshold_AFNI_cluster(self, crit='Rsqmb', mesh='pial'):
+    def threshold_AFNI_cluster(self, crit='Rsqmb', mesh='pial', cv=True):
         """
         Threshold, then AFNI SurfClust, then Extract Clusters
-        verts, trias = mod.threshold_AFNI_cluster(crit, mesh)
+        verts, trias = mod.threshold_AFNI_cluster(crit, mesh, cv)
         
             crit  - string; criteria for thresholding (see "threshold_maps")
             mesh  - string; mesh file ("inflated", "pial", "white" or "midthickness")
+            cv    - bool; indicating whether cross-validated R-squared is used
             
             verts - dict of arrays; vertex properties
             o left  - array; v x 8 matrix of left hemisphere vertices
@@ -1227,11 +1464,11 @@ class Model(Session):
             o right - array; t x 3 matrix of right hemisphere triangles
             verts, trias - see "threshold_and_cluster"
         
-        verts, trias = mod.threshold_AFNI_cluster(crit, mesh) loads estimated
-        NumpRF model results, (i) thresholds tuning parameter maps according
-        to threshold crit (see "threshold_maps"), (ii) uses AFNI to perform
-        surface clustering by edge distance and (iii) returns supra-threshold
-        vertices and surface triangles.
+        verts, trias = mod.threshold_AFNI_cluster(crit, mesh, cv) loads
+        estimated NumpRF model results, (i) thresholds tuning parameter maps
+        according to criteria crit (see "threshold_maps"), (ii) uses AFNI to
+        perform surface clustering by edge distance and (iii) returns supra-
+        threshold vertices and surface triangles.
         """
         
         # Step 1: R-squared map thresholding
@@ -1239,7 +1476,8 @@ class Model(Session):
         hemis    = {'L': 'left', 'R': 'right'}
         res_file = self.get_results_file('L')
         filepath = res_file[:res_file.find('numprf.mat')]
-        beta_thr = filepath + 'beta' + '_thr-' + crit + '.surf.gii'
+        Rsq_str  = ['Rsq','cvRsq'][int(cv)]
+        Rsq_thr  = filepath + Rsq_str + '_thr-' + crit + '.surf.gii'
         
         # display message
         print('\n-> Subject "{}", Session "{}", Model "{}",\n   Space "{}", Surface "{}":'. \
@@ -1247,16 +1485,17 @@ class Model(Session):
         
         # threshold maps
         print('   - Step 1: threshold R-squared maps ... ', end='')
-        if not os.path.isfile(beta_thr):
-            maps = self.threshold_maps(crit)
+        if not os.path.isfile(Rsq_thr):
+            maps = self.threshold_maps(crit, cv)
             # dictionary "maps":
             # - keys "mu", "fwhm", "beta", "Rsq"
             #   - sub-keys "left", "right"
             print()
         else:
             print('already done.')
-            maps = {}
-            for para in ['mu','fwhm','beta','Rsq']:
+            maps  = {}
+            paras = ['mu','fwhm','beta',Rsq_str]
+            for para in paras:
                 maps[para] = {}
                 for hemi in hemis.keys():
                     res_file = self.get_results_file(hemi)
@@ -1268,13 +1507,13 @@ class Model(Session):
         cls_sh    = tool_dir[:tool_dir.find('Python/')] + 'Shell/' + 'cluster_surface'
         if self.space == 'fsnative':  cls_sh = cls_sh + '.sh'
         if self.space == 'fsaverage': cls_sh = cls_sh + '_fsa.sh'
-        img_str   = 'space-' + self.space + '_' + 'Rsq' + '_thr-' + crit
+        img_str   = 'space-' + self.space + '_' + Rsq_str + '_thr-' + crit
         mesh_file = self.get_mesh_files(self.space, surface=mesh)['left']
         if self.space == 'fsnative':
             anat_pref = mesh_file[mesh_file.find('sub-')+len('sub-000/'):mesh_file.find('hemi-L')]
         if self.space == 'fsaverage':
             anat_pref = mesh_file[mesh_file.find('fsaverage/')+len('fsaverage/'):mesh_file.find('left.gii')]
-        Rsq_cls   = filepath + 'Rsq' + '_thr-' + crit + '_cls-' + 'SurfClust' + '.surf.gii'
+        Rsq_cls   = filepath + Rsq_str + '_thr-' + crit + '_cls-' + 'SurfClust' + '.surf.gii'
         
         # cluster surface
         print('   - Step 2: surface cluster using AFNI ... ', end='')
@@ -1307,7 +1546,7 @@ class Model(Session):
             mu   = nib.load(maps['mu'][h]).darrays[0].data
             fwhm = nib.load(maps['fwhm'][h]).darrays[0].data
             beta = nib.load(maps['beta'][h]).darrays[0].data
-            Rsq  = nib.load(maps['Rsq'][h]).darrays[0].data
+            Rsq  = nib.load(maps[Rsq_str][h]).darrays[0].data
             
             # load surface mesh
             mesh_gii    = nib.load(mesh_files[h])
@@ -1317,7 +1556,7 @@ class Model(Session):
             # load cluster indices
             res_file = self.get_results_file(hemi)
             filepath = res_file[:res_file.find('numprf.mat')]
-            Rsq_cls  = filepath + 'Rsq' + '_thr-' + crit + '_cls-' + 'SurfClust' + '_cls' + '.surf.gii'
+            Rsq_cls  = filepath + Rsq_str + '_thr-' + crit + '_cls-' + 'SurfClust' + '_cls' + '.surf.gii'
             clst     = nib.load(Rsq_cls).darrays[0].data
             
             # generate vertex table
@@ -2084,7 +2323,7 @@ def correct_onsets(ons, dur, stim):
         
         ons    - b0 x 1 vector; block-wise onsets [s]
         dur    - b0 x 1 vector; block-wise durations [s]
-        stim   - b0 x 1 vector; block-wise stimuli (b = blocks per epoch)
+        stim   - b0 x 1 vector; block-wise stimuli (b0 = blocks per epoch)
     
     ons, dur, stim = correct_onsets(ons, dur, stim) corrects onsets ons,
     durations dur and stimuli stim, if signals are averaged across epochs

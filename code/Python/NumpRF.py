@@ -32,6 +32,11 @@ Joram Soch, MPI Leipzig <soch@cbs.mpg.de>
 2023-11-27, 14:43: corrtest, Rsqtest
 2023-12-16, 13:04: Rsq2pval
 2024-02-07, 13:04: pval2Rsq
+2024-04-24, 09:37: hemodynamic_signals
+2024-05-28, 10:52: calculate_Rsq
+2024-06-25, 15:03: Rsqsig
+2024-06-27, 12:23: Rsqsig
+2024-07-01, 18:19: sig2fwhm, neuronal_signals, estimate_MLE
 """
 
 
@@ -146,6 +151,7 @@ def lin2log(mu, fwhm):
         while step < 5:
             m, f = log2lin(mu_log, sig_log)     # calculate mu, fwhm, as of now
             if f == fwhm:                       # if f equal fwhm, sig_log is found
+                s = 0
                 break
             elif f < fwhm:                      # if f smaller fwhm, increase sig_log
                 s = +1
@@ -159,6 +165,25 @@ def lin2log(mu, fwhm):
     
     # return mu_log and sig_log
     return mu_log, sig_log
+
+# function: sigma to fwhm
+#-----------------------------------------------------------------------------#
+def sig2fwhm(sig):
+    """
+    Transform Standard Deviation to Tuning Width
+    
+    
+        sig  - float; standard deviation of tuning in linear space
+        
+        fwhm - float; full width at half maximum in linear space
+    
+    fwhm = sig2fwhm(sig) transforms standard deviation sig to tuning width fwhm
+    measured as full width at half maximum of tuning in linear space.
+    """
+    
+    # calculate sigma
+    fwhm = sig*(2*math.sqrt(2*math.log(2)))
+    return fwhm
 
 # function: fwhm to sigma
 #-----------------------------------------------------------------------------#
@@ -339,6 +364,74 @@ def pval2Rsq(pval, n, p=2):
     Rsq = (F/(n-p2))/((1/(p2-p1)) + (F/(n-p2)))
     return Rsq
 
+# function: significance of R-squared
+#-----------------------------------------------------------------------------#
+def Rsqsig(Rsq, n, p=2, alpha=0.05, meth=''):
+    """
+    Assess Significance of Coefficient of Determination, given n and p
+    sig = Rsqsig(Rsq, n, p, alpha, meth)
+    
+        Rsq   - 1 x v array; coefficients of determination
+        n     - int; number of observations (see "Rsq2pval")
+        p     - int; number of explanatory variables (see "Rsq2pval")
+        alpha - float; significance level of the statistical test
+        meth  - string; method for multiple comparison correction
+        
+        sig   - 1 x v array; true, if F-test for Rsq is significant
+    
+    sig = Rsqsig(Rsq, n, p, alpha, meth) converts R-squareds to p-values given
+    number of observations n and number of predictors p and assesses statistical
+    significance given significance level alpha and multiple comparison
+    correction technique meth.
+    
+    The input parameter "meth" is a string that can be one of the following:
+    o "" : no multiple comparison corretion                    [1]
+    o "B": Bonferroni correction for multiple comparisons      [2]
+    o "H": Holm-Bonferroni correction for multiple comparisons [3]
+    o "S": Šidák correction for multiple comparisons           [4]
+    
+    [1] https://en.wikipedia.org/wiki/Multiple_comparisons_problem
+    [2] https://en.wikipedia.org/wiki/Bonferroni_correction
+    [3] https://en.wikipedia.org/wiki/Holm%E2%80%93Bonferroni_method
+    [4] https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
+    """
+    
+    # calculate p-values
+    pval = Rsq2pval(Rsq, n, p)
+    m    = pval.size
+    
+    # no multiple comparison correction
+    if   meth == '':
+        sig   = pval < alpha
+    
+    # Bonferroni correction for multiple comparisons
+    elif meth == 'B':
+        alpha = alpha/m
+        sig   = pval < alpha
+    
+    # Šidák correction for multiple comparisons
+    elif meth == 'S':
+        alpha = 1 - np.power(1-alpha, 1/m)
+        sig   = pval < alpha
+        
+    # Holm-Bonferroni correction for multiple comparisons
+    elif meth == 'H':
+        ind   = np.argsort(pval)
+        sig   = np.zeros(pval.shape, dtype=bool)
+        for i in range(m):
+            if pval[ind[i]] < (alpha/(m-i)):
+                sig[ind[i]] = True
+            else:
+                break
+    
+    # unknown method for multiple comparison correction
+    else:
+        err_msg = 'Unknown multiple comparison correction method: "{}". Method must be "", "B", "H" or "S".'
+        raise ValueError(err_msg.format(meth))
+    
+    # return significance
+    return sig
+
 # function: test for correlation
 #-----------------------------------------------------------------------------#
 def corrtest(r, n, p=2, alpha=0.05):
@@ -384,7 +477,7 @@ def corrtest(r, n, p=2, alpha=0.05):
 
 # function: neuronal model
 #-----------------------------------------------------------------------------#
-def neuronal_signals(ons, dur, stim, TR, mtr, mu_log, sig_log):
+def neuronal_signals(ons, dur, stim, TR, mtr, mu_log, sig_log, lin=False):
     """
     Compute Signals According to Neuronal Model
     Z, t = neuronal_signals(ons, dur, stim, TR, mtr, mu_log, sig_log)
@@ -396,6 +489,8 @@ def neuronal_signals(ons, dur, stim, TR, mtr, mu_log, sig_log):
         mtr     - int; microtime resolution (= bins per TR)
         mu_log  - 1 x v vector; preferred numerosity in logarithmic space
         sig_log - 1 x v vector; tuning width in logarithmic space
+        lin     - bool; indicating use of linear tuning functions
+                  (in which case mu_log = mu_lin and sig_log = sig_lin)
         
         Z       - m x v matrix; neuronal signals tuned to stimuli
         t       - m x 1 vector; time vector at temporal resolution TR/mtr
@@ -414,7 +509,10 @@ def neuronal_signals(ons, dur, stim, TR, mtr, mu_log, sig_log):
     Z = np.zeros((math.ceil(T/dt),v))
     t = np.arange(0,T,dt)
     for o,d,s in zip(ons,dur,stim):
-        Z[int(o):(int(o)+int(d)),:] = f_log(s, mu_log, sig_log)
+        if not lin:
+            Z[int(o):(int(o)+int(d)),:] = f_log(s, mu_log, sig_log)
+        else:
+            Z[int(o):(int(o)+int(d)),:] = f_lin(s, mu_log, sig_log)
     
     # return neuronal signals
     return Z, t
@@ -449,6 +547,12 @@ def hemodynamic_signals(Z, t, n, mtr, mto=1, p=None, order=1):
         for j in range(v):
             S[:,j,k] = np.convolve(Z[:,j], bf[:,k])
             S[:,j,k] = S[:,j,k] / np.max(np.abs(S[:,j,k]))
+    
+    # add time points, if necessary
+    if S.shape[0] < n*mtr:
+        S = np.concatenate((S, np.zeros(((n*mtr-S.shape[0]),v,order))), axis=0)
+    if t.shape[0] < n*mtr:
+        t = np.concatenate((t, np.arange(np.max(t)+dt, np.max(t)+(n*mtr-t.shape[0]+1)*dt, dt)), axis=0)
     
     # down-sample signals temporally
     i = np.arange(mto-1, n*mtr, mtr)
@@ -503,7 +607,7 @@ class DataSet:
     def simulate(self, mu, fwhm, mu_b=10, mu_c=1, s2_k=1, s2_j=0.1, s2_i=1, tau=0.001, hrf=None):
         """
         Simulate Data across Scans, Voxels and Runs
-        Y, S, X, B = ds.simulate(mu, fwhm, mu_b=1, mu_c, s2_k, s2_j, s2_i, tau, hrf)
+        Y, S, X, B = ds.simulate(mu, fwhm, mu_b, mu_c, s2_k, s2_j, s2_i, tau, hrf)
             
             mu   - 1 x v vector; preferred numerosities in linear space (v = voxels)
             fwhm - 1 x v vector; tuning widths in linear space
@@ -596,7 +700,7 @@ class DataSet:
     
     # function: maximum likelihood estimation
     #-------------------------------------------------------------------------#
-    def estimate_MLE(self, avg=[False, False], corr='iid', order=1, mu_grid=None, sig_grid=None, fwhm_grid=None, Q_set=None):
+    def estimate_MLE(self, avg=[False, False], corr='iid', order=1, Q_set=None, mu_grid=None, sig_grid=None, fwhm_grid=None, lin=False):
         """
         Maximum Likelihood Estimation of Numerosity Tuning Parameters
         mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =
@@ -608,11 +712,12 @@ class DataSet:
                                 "i.i.d. errors" or "AR(1) model")
             order     - int; order of the HRF model, must be 1, 2 or 3
                              (see "PySPM.spm_get_bf")
+            Q_set     - list of matrices; covariance components for AR estimation
+                                          (default: see below, part 2)
             mu_grid   - vector; candidate values for mu
             sig_grid  - vector; candidate values for sigma (in logarithmic space)
             fwhm_grid - vector; candidate values for fwhm (in linear space)
-            Q_set     - list of matrices; covariance components for AR estimation
-                                          (default: see below, part 2)
+            lin       - bool; indicating use of linear tuning functions
             
             mu_est    - 1 x v vector; estimated numerosities in linear space
             fwhm_est  - 1 x v vector; estimated tuning widths in linear space
@@ -768,12 +873,12 @@ class DataSet:
             if fwhm_grid is None:           # range: sig_log = 0.05,...,3.00
                 sig_grid  = np.arange(0.05, 3.05, 0.05)
         # Explanation: If "sig_grid" and "fwhm_grid" are not specified,
-        # then "sig_grid is specified (see comment in help text).
+        # then "sig_grid" is specified (see comment in help text).
         elif sig_grid is not None:
             if fwhm_grid is not None:
                 fwhm_grid = None
         # Explanation: If "sig_grid" and "fwhm_grid" are both specified,
-        # then "fwhm_grid is disspecified (see comment in help text).
+        # then "fwhm_grid" is disspecified (see comment in help text).
         
         # specify parameter grid
         mu   = mu_grid
@@ -809,6 +914,8 @@ class DataSet:
                 mu_log  = math.log(m)*np.ones(sig.size)
                 sig_log = sig
                 fwhms   = log2lin(mu_log, sig_log)[1]
+            if lin:
+                sig_lin = fwhm2sig(fwhms)
             MLL  = np.zeros((fwhms.size,v))
             beta = np.zeros((fwhms.size,v))
             
@@ -817,8 +924,12 @@ class DataSet:
             print('mu = {:.2f}, fwhm = {:.2f}, ..., {:.2f}'.format(m, fwhms[0], fwhms[-1]))
             
             # predict time courses
-            Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mu_log, sig_log)
-            S, t = hemodynamic_signals(Z, t, n, mtr, mto, p=None, order=o)
+            if not lin:
+                Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mu_log, sig_log, lin=False)
+            else:
+                Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mus, sig_lin, lin=True)
+            if True:
+                S, t = hemodynamic_signals(Z, t, n, mtr, mto, p=None, order=o)
             del Z, t
             
             # for all values of fwhm
@@ -1122,6 +1233,149 @@ class DataSet:
         #---------------------------------------------------------------------#
         return k_est, k_null, k_const
     
+    # function: calculation of R-squared
+    #-------------------------------------------------------------------------#
+    def calculate_Rsq(self, mu, fwhm, beta, avg=[False, False], corr='iid', order=1):
+        """
+        Calculation of R-Squared for Numerosity Model
+        Rsq = ds.calculate_Rsq(mu, fwhm, beta, avg, corr, order)
+            
+            mu    - 1 x v vector; numerosities in linear space
+            fwhm  - 1 x v vector; tuning widths in linear space
+            beta  - 1 x v vector; scaling factors for each voxel
+            avg   - list of bool; indicating signal averaging
+            corr  - string; method for serial correlations
+            order - int; order of the HRF model
+                   (for "avg", "corr", "order", see "estimate_MLE")
+        
+        Note: The scaling factor is re-estimated when calculating the model fit,
+        so any input for "beta" is being ignored.
+        """
+        
+        # part 1: prepare data and design matrix
+        #---------------------------------------------------------------------#
+        n = self.Y.shape[0]; n_orig = n     # number of scans
+        v = self.Y.shape[1]                 # number of voxels
+        r = self.Y.shape[2]                 # number of runs
+        c = self.X_c.shape[1]               # number of variables
+        o = order                           # number of HRF regressors
+        
+        # if averaging across runs or epochs, regress out confounds first
+        if avg[0] or avg[1]:
+            Y = np.zeros(self.Y.shape)
+            for j in range(r):
+                glm      = PySPM.GLM(self.Y[:,:,j], np.c_[self.X_c[:,:,j], np.ones((n,1))])
+                B_est    = glm.OLS()
+                # subtract confounds from signal, then re-add constant regressor
+                Y[:,:,j] = glm.Y - glm.X @ B_est + glm.X[:,[-1]] @ B_est[[-1],:]
+        
+        # otherwise, use signals without further manipulation
+        else:
+            Y = self.Y
+        
+        # then average signals across runs and/or epochs, if applicable
+        import EMPRISE
+        Y, t = EMPRISE.average_signals(Y, t=None, avg=avg)
+        if avg[1]: n = Y.shape[0]           # update number of scans
+        
+        # since design is identical across runs, always use first run
+        ons = self.ons; dur = self.dur; stim = self.stim;
+        ons = ons[0];   dur = dur[0];   stim = stim[0];
+        
+        # if averaging across epochs, correct onsets to first epoch
+        if avg[1]:
+            ons, dur, stim = EMPRISE.correct_onsets(ons, dur, stim)
+        
+        # if averaging across runs or epochs, exclude confounds
+        if avg[0] or avg[1]:
+            p = o + 1           # number of regression coefficients
+            X = np.c_[np.zeros((n,o)), np.ones((n,1))]
+            if not avg[0]:      # run-independent design matrices
+                X = np.repeat(np.expand_dims(X, 2), r, axis=2)
+        
+        # otherwise, add confounds to design matrix
+        else:
+            p = o + c + 1       # number of regression coefficients
+            X = np.zeros((n,p,r))
+            for j in range(r):  # run-wise design matrices
+                X[:,:,j] = np.c_[np.zeros((n,o)), self.X_c[:,:,j], np.ones((n,1))]
+        
+        # specify further parameters
+        mtr = EMPRISE.mtr       # microtime resolution (= bins per TR)
+        mto = EMPRISE.mto       # microtime onset (= reference slice)
+        del EMPRISE
+        
+        # part 2: prepare correlation matrix
+        #---------------------------------------------------------------------#
+        if corr == 'iid':
+            # invoke identity matrices, if i.i.d. errors
+            if avg[0]:
+                V   = np.eye(n)
+                P   = V
+                ldV = 0
+            else:
+                V   = np.repeat(np.expand_dims(np.eye(n), 2), r, axis=2)
+                P   = V
+                ldV = np.zeros(r)
+        elif corr == 'ar1':
+            err_msg = 'Forbidden correlation method: "{}". This is currently not implemented.'
+            raise ValueError(err_msg.format(corr))
+        else:
+            err_msg = 'Unknown correlation method: "{}". Method must be "iid" or "ar1".'
+            raise ValueError(err_msg.format(corr))
+        
+        # part 3: calculate R-squared
+        #---------------------------------------------------------------------#
+        print('\n-> Calculation of R-squared ({} runs, {} voxels, {} scans, '. \
+              format(r, v, n_orig), end='')
+        print('\n   {}averaging across runs, {}averaging across epochs):'. \
+              format(['no ', ''][int(avg[0])], ['no ', ''][int(avg[1])]))
+        print('   - voxel ', end='')
+        
+        # prepare predicted signals
+        Yp  = np.zeros(Y.shape)
+        
+        # for all voxels
+        for k in range(v):
+            
+            # report current voxel
+            if (k+1) % 5000 == 0: print(k+1, ', ', sep='', end='')
+            
+            # obtain tuning parameters
+            mu_log, sig_log = lin2log(mu[k], fwhm[k])
+            mu_log  = np.array([mu_log])
+            sig_log = np.array([sig_log])
+            
+            # generate expected signals
+            Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mu_log, sig_log)
+            S, t = hemodynamic_signals(Z, t, n, mtr, mto, p=None, order=o)
+            del Z, t
+            
+            # generate design & predict signals
+            if avg[0]:
+                X[:,0:o]  = S[:,0,:]
+              # glm       = PySPM.GLM(Y[:,[k]], X, P=P, ldV=ldV)
+              # Yp[:,[k]] = glm.X @ glm.WLS()
+                Yp[:,[k]] = X @ np.linalg.inv(X.T @ X) @ (X.T @ Y[:,[k]])
+            else:
+                for j in range(r):
+                    X[:,0:o,j]  = S[:,0,:]
+                  # glm         = PySPM.GLM(Y[:,[k],j], X[:,:,j], P=P[:,:,j], ldV=ldV[j])
+                  # Yp[:,[k],j] = glm.X @ glm.WLS()
+                    Yp[:,[k],j] = X[:,:,j] @ np.linalg.inv(X[:,:,j].T @ X[:,:,j]) @ (X[:,:,j].T @ Y[:,[k],j])
+        
+        # concatenate across runs
+        if not avg[0]:
+            Y  = np.concatenate(np.transpose(Y,  axes=(2,0,1)), axis=0)
+            Yp = np.concatenate(np.transpose(Yp, axes=(2,0,1)), axis=0)
+        
+        # calculate R-squared
+        print('end.')
+        Rsq = yp2Rsq(Y, Yp)
+        
+        # return calculated R-squared
+        return Rsq
+    
     # function: visualize signals (single axis)
     #-------------------------------------------------------------------------#
     def plot_signals_axis(self, ax):
@@ -1250,7 +1504,7 @@ if __name__ == '__main__':
     # enter "%matplotlib qt" in Spyder before
     
     # specify what to test
-    what_to_test = 'pval2Rsq'
+    what_to_test = 'neuronal_signals'
     
     # test "lin2log" etc.
     if what_to_test == 'lin2log':
@@ -1354,19 +1608,25 @@ if __name__ == '__main__':
     
     # test "neuronal_signals"
     if what_to_test == 'neuronal_signals':
-        mu_log, sig_log = lin2log(3,1.5)
+        mu = 3; fwhm = 1.5;
+        mu_log, sig_log = lin2log(mu, fwhm)
+        mu_lin, sig_lin = (mu, fwhm2sig(fwhm))
         ons, dur, stim  = EMPRISE.Session('001', 'visual').get_onsets()
         ons, dur, stim  = EMPRISE.onsets_trials2blocks(ons, dur, stim, 'closed')
-        Z, t = neuronal_signals(ons[0], dur[0], stim[0], EMPRISE.TR, EMPRISE.mtr, np.array([mu_log]), np.array([sig_log]))
+        # Z, t = neuronal_signals(ons[0], dur[0], stim[0], EMPRISE.TR, EMPRISE.mtr, np.array([mu_log]), np.array([sig_log]))
+        Z, t = neuronal_signals(ons[0], dur[0], stim[0], EMPRISE.TR, EMPRISE.mtr, np.array([mu_lin]), np.array([sig_lin]), lin=True)
         plt.plot(t, Z, '-b')
         plt.show()
         
     # test "hemodynamic_signals"
     if what_to_test == 'hemodynamic_signals':
-        mu_log, sig_log = lin2log(3,1.5)
+        mu = 3; fwhm = 1.5;
+        mu_log, sig_log = lin2log(mu, fwhm)
+        mu_lin, sig_lin = (mu, fwhm2sig(fwhm))
         ons, dur, stim  = EMPRISE.Session('001', 'visual').get_onsets()
         ons, dur, stim  = EMPRISE.onsets_trials2blocks(ons, dur, stim, 'closed')
         Z, t = neuronal_signals(ons[0], dur[0], stim[0], EMPRISE.TR, EMPRISE.mtr, np.array([mu_log]), np.array([sig_log]))
+        Z, t = neuronal_signals(ons[0], dur[0], stim[0], EMPRISE.TR, EMPRISE.mtr, np.array([mu_lin]), np.array([sig_lin]), lin=True)
         S, t = hemodynamic_signals(Z, t, EMPRISE.n, EMPRISE.mtr, EMPRISE.mto, order=3)
         plt.plot(t, S[:,0,0], '-b')
         plt.plot(t, S[:,0,1], '-r')
