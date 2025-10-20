@@ -6,6 +6,10 @@ Joram Soch, MPI Leipzig <soch@cbs.mpg.de>
 2024-04-04, 11:29: settings, loading, simulate
 2024-04-04, 17:58: analyze, processing, visualize
 2024-04-05, 09:12: processing, visualize, figures
+2025-10-02, 14:49: replaced R²>0.2 by p<0.05 (Bonferroni),
+                   added seeding of random number generator
+2025-10-08, 16:07: enabled simulation using linear vs. logarithmic
+                   and analysis using linear vs. logarithmic
 """
 
 
@@ -36,6 +40,12 @@ import math
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
+
+# specify simulation/analysis model
+simulate = 'log'                # model for simulation
+analyze  = 'log'                # model for analysis
+# Explanation: Simulated signals are generated with log(arithmic) or lin(ear)
+# tuning functions and analyzed with log(arithmic) or lin(ear) tuning models.
 
 # specify fMRI repetition time
 TR = EMPRISE.TR
@@ -116,7 +126,8 @@ hrf_std  = np.array([0.5,  1,0.1,0.1,0.5,  0,  0])
 mu_b = np.zeros(mu.shape)       # mean numerosity signal effect
 mu_c = np.zeros(mu.shape)       # mean confound variable effect
 s2_i = np.zeros(mu.shape)       # within-run variance
-# Explanation: These regression coefficients 
+# Explanation: These regression coefficients are here set to zero and then
+# later filled with their simulated values (see Step 3).
 
 # specify confound variables
 labels = ['trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z', \
@@ -155,6 +166,7 @@ X_c = EMPRISE.standardize_confounds(X_c)
 ### Step 3: simulate data #####################################################
 
 # prepare simulation
+np.random.seed(0)               # initialize RNG
 ds  = NumpRF.DataSet(0, ons, dur, stim, TR, X_c)
 n   = X_c.shape[0]              # number of scans per run
 p   = X_c.shape[1]+2            # number of regressors (= numerosity + confounds + baseline)
@@ -200,7 +212,8 @@ for i in range(v):
     
     # pre-simulate to calculate SNR
     y, s, x, b = ds.simulate(
-        mu[[i]], fwhm[[i]], mu_b[i], mu_c[i], 0, 0, 0, tau, HRF[i,:])
+        mu[[i]], fwhm[[i]], mu_b[i], mu_c[i], 0, 0, 0, tau,
+        HRF[i,:], simulate=='lin')
     if mu[i] == 0.001:
         VXb = np.var(x[:,1:,0] @ b[1:,0,0])
     else:
@@ -221,7 +234,7 @@ for i in range(v):
     # sample simulated data
     Y[:,[i],:], S[:,[i],:], X, B[:,[i],:] = ds.simulate(
         mu[[i]], fwhm[[i]], mu_b[i], mu_c[i],
-        0, s2_j, s2_i[i], tau, HRF[i,:])
+        0, s2_j, s2_i[i], tau, HRF[i,:], simulate=='lin')
     # Explanation: see "NumpRF.DataSet.simulate"; s2_k is set to 0, because
     # it was already applied above and each voxel is simulated separately.
     
@@ -244,8 +257,8 @@ print('   - no-signal voxels: median SNR = {:.2f};'.format(np.median(SNR[:,mu==0
 print('   - numerosity voxels: median SNR = {:.2f};'.format(np.median(SNR[:,mu!=0.001])))
 
 # save simulated data (Python)
-# np.savez('Demo_results/Demo_Data.npz', \
-#          Y=Y, S=S, X=X, B=B, mu=mu, fwhm=fwhm, SNR=SNR)
+# filename = 'Demo_results/Demo_Data'+'_simulate-'+simulate+'_analyze-'+analyze+'.npz'
+# np.savez(filename, Y=Y, S=S, X=X, B=B, mu=mu, fwhm=fwhm, SNR=SNR)
 
 # save simulated data (MATLAB)
 settings = {'sub': sub, 'ses': ses, 'labels': labels, \
@@ -255,7 +268,8 @@ settings = {'sub': sub, 'ses': ses, 'labels': labels, \
 res_dict = {'Y': Y, 'S': S, 'X': X, 'B': B, \
             'mu': mu, 'fwhm': fwhm, 'SNR': SNR, \
             'settings': settings}
-sp.io.savemat('Demo_results/Demo_Data.mat', res_dict)
+filename = 'Demo_results/Demo_Data'+'_simulate-'+simulate+'_analyze-'+analyze+'.mat'
+sp.io.savemat(filename, res_dict)
 
 
 ### Step 4: analyze data ######################################################
@@ -264,6 +278,7 @@ sp.io.savemat('Demo_results/Demo_Data.mat', res_dict)
 avg   = [True, False]           # average over runs, but not cycles
 corr  = 'iid'                   # assume i.i.d. errors
 order = 1                       # use no HRF derivatives
+Q_set = None                    # use no covariance components
 
 # specify parameter grids
 mu_grid   = np.concatenate((np.arange(0.80, 5.25, 0.05), np.array([20])))
@@ -274,7 +289,7 @@ fwhm_grid = None
 # grid of plausible values: mu from 0.8 to 5.2 in steps of 0.05, sig_log from
 # 0.05 to 30 in steps of 0.05 (such that 0.12 < fwhm < 34.17 for the lowest
 # presented numerosity mu=1 and 0.59 < fwhm < 170.9 for the highest presented
-# numerosity mu=5)."
+# numerosity mu=5; cf. equation above)."
 
 # initialize data set
 ds = NumpRF.DataSet(Y, ons, dur, stim, TR, X_c)
@@ -282,7 +297,7 @@ start_time = time.time()
 
 # estimate ML parameters
 mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =\
-    ds.estimate_MLE(avg, corr, order, mu_grid, sig_grid, fwhm_grid)
+    ds.estimate_MLE(avg, corr, order, Q_set, mu_grid, sig_grid, fwhm_grid, analyze=='lin')
 k_est, k_null, k_const =\
     ds.free_parameters(avg, corr, order)
 
@@ -292,17 +307,18 @@ difference = end_time - start_time
 del start_time, end_time
 
 # save estimated parameters (Python)
-# np.savez('Demo_results/Demo_Analysis.npz', \
-#          mu_est=mu_est, fwhm_est=fwhm_est, beta_est=beta_est, \
-#          MLL_est=MLL_est, MLL_null=MLL_null, MLL_const=MLL_const)
+# filename = 'Demo_results/Demo_Analysis'+'_simulate-'+simulate+'_analyze-'+analyze+'.npz'
+# np.savez(filename, mu_est=mu_est, fwhm_est=fwhm_est, beta_est=beta_est, \
+#                    MLL_est=MLL_est, MLL_null=MLL_null, MLL_const=MLL_const)
 
 # save estimated parameters (MATLAB)
 settings = {'avg': avg, 'corr': corr, 'order': order, \
             'mu_grid': mu_grid, 'sig_grid': sig_grid, 'fwhm_grid': np.nan}
 res_dict = {'mu_est': mu_est, 'fwhm_est': fwhm_est, 'beta_est': beta_est, \
             'MLL_est': MLL_est, 'MLL_null': MLL_null, 'MLL_const': MLL_const, \
-            'time': difference, 'settings': settings}
-sp.io.savemat('Demo_results/Demo_Analysis.mat', res_dict)
+            'version': 'V2', 'time': difference, 'settings': settings}
+filename = 'Demo_results/Demo_Analysis'+'_simulate-'+simulate+'_analyze-'+analyze+'.mat'
+sp.io.savemat(filename, res_dict)
 
 
 ### Step 5: process results ###################################################
@@ -310,25 +326,26 @@ sp.io.savemat('Demo_results/Demo_Analysis.mat', res_dict)
 # calculate R-squared
 Rsq_est = NumpRF.MLL2Rsq(MLL_est, MLL_const, n)
 pval    = NumpRF.Rsq2pval(Rsq_est, n, p=4)
+sig     = NumpRF.Rsqsig(Rsq_est, n, p=4, alpha=0.05, meth='B')
 # Explanation: The number of parameters in the numerosity model is four.
 # This is also explained in the manuscript: "To assess statistical significance
 # of variance explanation by the tuning model, we performed an F-test of the
-# model including the numerosity regressor against a null model including only
-# the baseline regressor, accounting for additional parameters in the degrees
-# of freedom: F = ((RSS0-RSS)/(p-1)) / (RSS/(n-p)) where n = 145 is the number
-# of scans per run and p = 4 is the number of free parameters in the numerosity
-# pRF model (beta_0, beta, mu, fwhm)."
+# model including the numerosity regressor (...) against a null model including
+# only the baseline regressor: F = ((RSS0-RSS)/(p-1)) / (RSS/(n-p)) where
+# n = 145 is the number of scans per run and p = 2 is the number of free
+# parameters in the numerosity pRF model (beta_0, beta)."
 
 # filter numerosity voxels (according to analysis)
 ind = mu_est > 0
 ind = np.logical_and(ind, beta_est>0)
 ind = np.logical_and(ind, np.logical_and(mu_est>=1, mu_est<=5))
-ind = np.logical_and(ind, Rsq_est>0.2)
+ind = np.logical_and(ind, pval < 0.05/v) # = np.logical_and(ind, sig)
 # Explanation: Filtering is used to identify voxels responsive to numerosity.
 # This is also explained in the manuscript: "Only vertices that exhibited a
 # positive scaling factor (beta>0), an estimated preferred numerosity inside
-# the presented stimulus range (1 <= mu <= 5) and more than 20% of variance
-# explained (R² > 0.2) were included in the following analyses."
+# the presented stimulus range (1 <= mu <= 5) and statistically significant
+# variance explained (p < 0.05, Bonferroni-corrected; see below) were included
+# in the following analyses."
 
 # filter numerosity voxels (according to ground truth)
 num = mu!=0.001
@@ -425,7 +442,7 @@ CR = np.sum(np.logical_and(~num, ~ind))/np.sum(~num)
 fig   = plt.figure(figsize=(16,9))
 ax    = fig.add_subplot(111)
 col   = 'b'
-names = ['hits', 'misses', 'false alarms', 'correct recognitions']
+names =['hits', 'misses', 'false alarms', 'correct rejections']
 
 # plot recognition rates
 ax.plot([0-1, len(names)], [0, 0], '-k', linewidth=1)
@@ -442,8 +459,7 @@ fig.show()
 ### Step 7: create paper figures ##############################################
 
 ### Step 7a: create analogue of Figure 2a-d ###################################
-# Explanation: This section follows "Figures.WP1_Fig1.
-#                                    plot_tuning_function_time_course".
+# Explanation: This section follows "Figures.WP1_Fig1.plot_tuning_function_time_course".
 
 # get session data
 # Y              - data matrix
@@ -465,6 +481,9 @@ Rsq  = NumpRF.MLL2Rsq(MLL1, MLL0, n)
 # select vertices for plotting
 verts = [np.argmax(Rsq + np.logical_and(mu>1, mu<2)),
          np.argmax(Rsq + np.logical_and(mu>4, mu<5))]
+if np.isnan(Rsq[verts[0]]) or np.isnan(Rsq[verts[1]]):
+    verts = [np.nanargmax(Rsq + np.logical_and(mu>1, mu<2)),
+             np.nanargmax(Rsq + np.logical_and(mu>4, mu<5))]
 
 # plot selected vertices
 fig = plt.figure(figsize=(24,len(verts)*8))
@@ -478,13 +497,21 @@ dx  = 0.05                  # numerosity delta
 for k, vertex in enumerate(verts):
 
     # compute vertex tuning function
-    mu_log, sig_log = NumpRF.lin2log(mu[vertex], fwhm[vertex])
     x  = np.arange(dx, xm+dx, dx)
-    y  = NumpRF.f_log(x, mu_log, sig_log)
     xM = mu[vertex]
-    x1 = np.exp(mu_log - math.sqrt(2*math.log(2))*sig_log)
-    x2 = np.exp(mu_log + math.sqrt(2*math.log(2))*sig_log)
-    x2 = np.min(np.array([x2,xm]))
+    if analyze == 'log':
+        mu_log, sig_log = NumpRF.lin2log(mu[vertex], fwhm[vertex])
+        y  = NumpRF.f_log(x, mu_log, sig_log)
+        x1 = np.exp(mu_log - math.sqrt(2*math.log(2))*sig_log)
+        x2 = np.exp(mu_log + math.sqrt(2*math.log(2))*sig_log)
+        x2 = np.min(np.array([x2,xm]))
+    else:
+        mu_lin, sig_lin = (mu[vertex], NumpRF.fwhm2sig(fwhm[vertex]))
+        y  = NumpRF.f_lin(x, mu_lin, sig_lin)
+        x1 = mu[vertex] - fwhm[vertex]/2
+        x2 = mu[vertex] + fwhm[vertex]/2
+        x1 = np.max(np.array([0,x1]))
+        x2 = np.max(np.array([x2,xm]))
     
     # plot vertex tuning function
     hdr  =('truth: mu = {:.2f}, fwhm = {' + ':.{}f'.format([1,2][int(fwhm[vertex]<10)]) + '}'). \
@@ -512,7 +539,7 @@ for k, vertex in enumerate(verts):
                   horizontalalignment='right', verticalalignment='top')
     axs[k,0].text(xm-(1/20)*xm, 0.05, txt2, fontsize=18,
                   horizontalalignment='right', verticalalignment='bottom')
-    del mu_log, sig_log, x, y, xM, x1, x2
+    del x, y, xM, x1, x2, hdr, txt1, txt2
 
 # Figure 2b/d: predicted time courses
 for k, vertex in enumerate(verts):
@@ -526,24 +553,39 @@ for k, vertex in enumerate(verts):
         y_reg[:,:,j] = glm.Y - glm.X @ b_reg
     
     # get vertex tuning parameters
-    mu_log, sig_log = NumpRF.lin2log(mu[vertex], fwhm[vertex])
+    if analyze == 'log':
+        mu_log, sig_log = NumpRF.lin2log(mu[vertex], fwhm[vertex])
+    else:
+        mu_lin, sig_lin = (mu[vertex], NumpRF.fwhm2sig(fwhm[vertex]))
     
     # compute predicted signal (run)
     y_run, t = EMPRISE.average_signals(y_reg, None, [True, False])
-    z, t = NumpRF.neuronal_signals(ons0, dur0, stim0, EMPRISE.TR, EMPRISE.mtr, np.array([mu_log]), np.array([sig_log]))
-    s, t = NumpRF.hemodynamic_signals(z, t, EMPRISE.n, EMPRISE.mtr)
-    glm  = PySPM.GLM(y_run, np.c_[s[:,:,0], np.ones((EMPRISE.n, 1))])
-    b_run= glm.OLS()
-    s_run= glm.X @ b_run
+    if analyze == 'log':
+        z, t = NumpRF.neuronal_signals(ons0, dur0, stim0, EMPRISE.TR, EMPRISE.mtr,
+                                       np.array([mu_log]), np.array([sig_log]), lin=False)
+    else:
+        z, t = NumpRF.neuronal_signals(ons0, dur0, stim0, EMPRISE.TR, EMPRISE.mtr,
+                                       np.array([mu_lin]), np.array([sig_lin]), lin=True)
+    if True:        
+        s, t = NumpRF.hemodynamic_signals(z, t, EMPRISE.n, EMPRISE.mtr)
+    glm   = PySPM.GLM(y_run, np.c_[s[:,:,0], np.ones((EMPRISE.n, 1))])
+    b_run = glm.OLS()
+    s_run = glm.X @ b_run
     
     # compute predicted signal (epoch)
     y_avg, t = EMPRISE.average_signals(y_reg, None, [True, True])
     # Note: For visualization purposes, we here apply "avg = [True, True]".
-    z, t = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr, np.array([mu_log]), np.array([sig_log]))
-    s, t = NumpRF.hemodynamic_signals(z, t, EMPRISE.scans_per_epoch, EMPRISE.mtr)
-    glm  = PySPM.GLM(y_avg, np.c_[s[:,:,0], np.ones((EMPRISE.scans_per_epoch, 1))])
-    b_avg= glm.OLS()
-    s_avg= glm.X @ b_avg
+    if analyze == 'log':
+        z, t = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr,
+                                       np.array([mu_log]), np.array([sig_log]), lin=False)
+    else:
+        z, t = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr,
+                                       np.array([mu_lin]), np.array([sig_lin]), lin=True)
+    if True:
+        s, t = NumpRF.hemodynamic_signals(z, t, EMPRISE.scans_per_epoch, EMPRISE.mtr)
+    glm   = PySPM.GLM(y_avg, np.c_[s[:,:,0], np.ones((EMPRISE.scans_per_epoch, 1))])
+    b_avg = glm.OLS()
+    s_avg = glm.X @ b_avg
     
     # assess statistical significance
     Rsq_run = Rsq[vertex]
@@ -589,7 +631,7 @@ for k, vertex in enumerate(verts):
     axs[k,1].tick_params(axis='both', labelsize=18)
     axs[k,1].text((1/20)*t_max, y_min-(1/20)*y_rng, txt, fontsize=18, \
                   horizontalalignment='left', verticalalignment='bottom')
-    del y, y_reg, y_avg, z, s, s_avg, t, b_reg, b_avg, mu_log, sig_log, y_min, y_max, y_rng, txt
+    del y, y_reg, y_avg, z, s, s_avg, t, b_reg, b_avg, y_min, y_max, y_rng, txt
     
     
 ### Step 7b: create analogue of Figure 5a #####################################
@@ -635,7 +677,7 @@ if np.any(area_s):
     ax.plot([mu_min,mu_max], np.array([mu_min,mu_max])*b_a[0]+b_a[1], '-', \
             color=col, label=lab)
 ax.set_xlim(mu_min-d_mu, mu_max+d_mu)
-ax.set_ylim(0, (11/10)*np.max(area_s))
+ax.set_ylim(0, (11/10)*np.nanmax(area_s))
 ax.legend(loc='upper right', fontsize=20)
 ax.tick_params(axis='both', labelsize=20)
 ax.set_xlabel('preferred numerosity', fontsize=28)
@@ -683,7 +725,7 @@ if np.any(fwhm_m):
     ax.plot([mu_min,mu_max], np.array([mu_min,mu_max])*b_f[0]+b_f[1], '-', \
             color=col, label=lab)
 ax.set_xlim(mu_min-d_mu, mu_max+d_mu)
-ax.set_ylim(0, (11/10)*np.max(fwhm_m+fwhm_se))
+ax.set_ylim(0, (11/10)*np.nanmax(fwhm_m+fwhm_se))
 ax.legend(loc='upper left', fontsize=20)
 ax.tick_params(axis='both', labelsize=20)
 ax.set_xlabel('preferred numerosity', fontsize=28)

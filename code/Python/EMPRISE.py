@@ -49,6 +49,8 @@ Joram Soch, MPI Leipzig <soch@cbs.mpg.de>
 2024-06-25, 15:18: threshold_maps, threshold_and_cluster
 2024-06-27, 13:39: threshold_maps, threshold_and_cluster
 2024-07-01, 18:11: analyze_numerosity
+2024-07-03, 17:00: calculate_Rsq
+2024-08-01, 19:15: threshold_SPM
 """
 
 
@@ -74,7 +76,7 @@ at_MPI = os.getcwd().startswith('/data/')
 if at_MPI:
     stud_dir = r'/data/pt_02495/emprise7t/'
     data_dir = stud_dir
-    deri_out = r'/data/pt_02495/emprise7t/derivatives/'
+    deri_out = r'/data/tu_soch/EMPRISE/data/derivatives/'
 else:
     stud_dir = r'C:/Joram/projects/MPI/EMPRISE/'
     data_dir = stud_dir + 'data/'
@@ -989,8 +991,17 @@ class Model(Session):
                 surface  = nib.load(mu_map)
                 mask     = surface.darrays[0].data != 0
                 
+                # determine tuning function
+                try:
+                    ver = NpRF['version'][0]
+                except KeyError:
+                    ver = 'V2'
+                linear_model = 'lin' in ver
+                
                 # calculate R-squared (all, odd, even)
                 avg   = list(NpRF['settings']['avg'][0,0][0,:])
+                corr  = NpRF['settings']['corr'][0,0][0]
+                order = NpRF['settings']['order'][0,0][0,0]
                 MLL1  = np.squeeze(NpRF['MLL_est'])
                 MLL00 = np.squeeze(NpRF['MLL_const'])
                 r0,n0 = self.calc_runs_scans(fold)
@@ -1031,7 +1042,7 @@ class Model(Session):
                         
                         # obtain fit across folds
                         ds          = NumpRF.DataSet(Y2, ons2, dur2, stim2, TR, Xc2)
-                        oosRsq[i,:] = ds.calculate_Rsq(mu1, fwhm1, beta1, avg)
+                        oosRsq[i,:] = ds.calculate_Rsq(mu1, fwhm1, beta1, avg, corr, order, lin=linear_model)
                         
                     # calculate cross-validated R-squared
                     Rsq = np.mean(oosRsq, axis=0)
@@ -1058,7 +1069,7 @@ class Model(Session):
     def threshold_maps(self, crit='Rsqmb', cv=True):
         """
         Threshold Numerosity, FWHM and Scaling Maps based on Criterion
-        maps = mod.threshold_maps(crit)
+        maps = mod.threshold_maps(crit, cv)
         
             crit - string; criteria used for thresholding maps
                           (default: "Rsqmb"; see below for details)
@@ -1477,7 +1488,7 @@ class Model(Session):
         res_file = self.get_results_file('L')
         filepath = res_file[:res_file.find('numprf.mat')]
         Rsq_str  = ['Rsq','cvRsq'][int(cv)]
-        Rsq_thr  = filepath + Rsq_str + '_thr-' + crit + '.surf.gii'
+        fwhm_thr = filepath + 'fwhm' + '_thr-' + crit + '.surf.gii'
         
         # display message
         print('\n-> Subject "{}", Session "{}", Model "{}",\n   Space "{}", Surface "{}":'. \
@@ -1485,7 +1496,7 @@ class Model(Session):
         
         # threshold maps
         print('   - Step 1: threshold R-squared maps ... ', end='')
-        if not os.path.isfile(Rsq_thr):
+        if not os.path.isfile(fwhm_thr):
             maps = self.threshold_maps(crit, cv)
             # dictionary "maps":
             # - keys "mu", "fwhm", "beta", "Rsq"
@@ -1884,7 +1895,10 @@ class Model(Session):
         elif con['type'] == 'F':
             q   = con['c'].shape[1]
             thr = sp.stats.f.ppf(1-alpha, q, n-p)
-        thr_str = '{:1.2e}'.format(alpha)
+        if alpha < 0.001:
+            thr_str = '{:1.2e}'.format(alpha)
+        else:
+            thr_str = '{:0.3f}'.format(alpha)
         
         # analyze hemispheres
         hemis = {'L': 'left', 'R': 'right'}
@@ -1909,10 +1923,10 @@ class Model(Session):
             del spm_thr, spm_img, image, filename
         
         # specify plotting
-        caxis  = [thr, 4*thr]
+        caxis  = [0, 4*thr]
         cmap   = 'hot'
         clabel = con['type']+'-value (p < '+thr_str+')'
-        cbar   = {'n_ticks': 4, 'decimals': 2, 'fontsize': 24}
+        cbar   = {'n_ticks': 5, 'decimals': 2, 'fontsize': 24}
         
         # specify mesh files
         mesh_files = self.get_mesh_files(self.space)

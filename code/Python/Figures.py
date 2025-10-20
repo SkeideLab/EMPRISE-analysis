@@ -1,70 +1,31 @@
 """
-Figures - Figures within the EMPRISE project
+Figures - Figures within the EMPRISE project (Revision)
 
 Joram Soch, MPI Leipzig <soch@cbs.mpg.de>
-2023-10-23, 16:15: WP 1, Figure 1
-2023-10-24, 18:26: WP 1, Figure 1
-2023-10-26, 18:05: WP1_Fig1
-2023-10-26, 21:47: WP 1, Figure 2
-2023-10-30, 15:40: WP1_Fig2
-2023-10-30, 16:22: WP1_Fig2
-2023-10-31, 17:19: WP1_Fig2
-2023-11-01, 17:55: WP 1, Figure 3
-2023-11-02, 10:47: WP1_Fig1
-2023-11-02, 12:55: WP1_Fig2
-2023-11-02, 14:43: WP 1, Figure 3
-2023-11-02, 18:07: WP 1, Figure 3
-2023-11-06, 15:30: WP1_Fig3
-2023-11-06, 20:34: WP1_Fig3
-2023-11-07, 16:58: Talk, Figures
-2023-11-08, 16:01: Talk, Figures
-2023-11-08, 16:42: WP1_Fig3
-2023-11-09, 11:30: refactoring
-2023-11-09, 15:55: simplinreg
-2023-11-09, 18:32: WP1_Fig3
-2023-11-09, 19:26: WP1_Fig3
-2023-11-09, 19:59: WP1_Fig1
-2023-11-09, 20:05: WP1_Fig2
-2023-11-09, 20:27: WP1_Fig3
-2023-11-09, 21:50: Talk, Figures
-2023-11-10, 11:09: Talk, Figures 1-4
-2023-11-10, 11:25: Talk, Figures 5-6
-2023-11-10, 16:05: Talk, Figure A
-2023-11-10, 17:25: Talk, Figure B
-2023-11-13, 13:16: Talk, Figures
-2023-11-13, 13:25: WP1_Fig3
-2023-11-16, 13:00: refactoring
-2023-11-16, 15:00: refactoring
-2023-11-16, 15:15: WP1_Ana1
-2023-11-16, 15:39: WP1_Fig3
-2023-11-16, 19:31: Talk_Figs
-2023-11-16, 19:57: WP1_Fig3
-2023-11-20, 14:29: WP1_Tab0
-2023-11-20, 14:50: WP1_Fig2
-2023-11-20, 15:16: WP1_Fig3
-2023-11-22, 11:34: WP1_Ana1
-2023-11-22, 12:41: WP1_Fig3
-2023-11-23, 16:24: WP1_Ana2
-2023-11-24, 09:48: WP1_Ana2
-2023-11-27, 14:58: WP1_Fig1
-2023-11-27, 15:55: WP1_Fig2/Fig3/Ana2
-2023-11-30, 21:58: WP1_Fig3
-2023-12-04, 14:57: filter_clusters
-2023-12-07, 17:22: filter_clusters
-2023-12-07, 18:37: WP1_Fig4
-2023-12-08, 11:31: WP1_Fig4
-2023-12-23, 16:23: refactoring
-2023-12-23, 17:22: WP1_Fig4
-2023-12-18, 12:45: WP1_Fig4
-2023-12-18, 14:06: transparency
-2023-12-18, 14:33: WP1_Tab2
-2023-12-18, 14:59: WP1_Ana2
-2023-12-19, 14:01: WP1_Tab1
-2023-12-21, 11:06: WP1_Fig1
-2023-12-21, 14:41: WP1_Fig4
-2024-02-19, 16:10: refactoring
-2024-02-26, 18:19: debugging
-2023-03-04, 10:52: WP1_Fig1
+2023-05-28, 15:45: inherited from "Figures_V1.py"
+2024-05-28, 16:16: WP1_Fig1
+2024-06-04, 15:47: WP1_Fig2
+2024-06-19, 14:59: WP1_Fig3
+2024-06-19, 15:27: WP1_Fig4
+2024-06-25, 19:57: WP1_Fig2
+2024-06-27, 13:18: WP1_Fig2
+2024-07-10, 15:59: WP1_Fig4
+2024-07-18, 15:34: WP1_Ana2
+2024-07-24, 12:39: WP1_Ana2
+2024-07-24, 13:48: WP1_Fig2
+2024-07-24, 15:43: WP1_Fig1
+2024-07-25, 17:58: WP1_Fig3, WP1_Fig4
+2024-07-31, 18:12: WP1_Fig1/2/3/4, WP1_Tab1/2
+2024-08-01, 18:28: WP1_Fig4
+2024-08-01, 19:21: WP1_Fig5
+2024-08-02, 16:53: WP1_Fig4
+2024-08-02, 17:02: WP1_Fig1, WP1_Fig5
+2024-09-11, 16:09: WP1_Fig6
+2024-09-16, 15:58: WP1_Fig4
+2024-09-27, 09:15: renamed "Figures_Rev" to "Figures_WP1"
+2024-09-27, 09:24: WP1_Fig4, WP1_Fig5
+2025-10-02, 13:15: WP1_Fig4
+2025-10-08, 11:13: WP1_Fig7
 """
 
 
@@ -78,7 +39,6 @@ import pandas as pd
 import nibabel as nib
 from nilearn import surface
 from surfplot import Plot
-import imageio
 import matplotlib.pyplot as plt
 import statsmodels.formula.api as smf
 import PySPMs as PySPM
@@ -376,387 +336,6 @@ def filter_clusters(verts, areas, A_min=10, d_max=10, nmap='', hemi=''):
     
     # return clusters
     return verts, areas
-    
-# function: Institute Colloquium Talk
-#-----------------------------------------------------------------------------#
-def Talk_Figs():
-    
-    # Figure 1: distinct pattern
-    L   = 10
-    dy  = 0.05
-    xd  = np.arange(1,L+1)
-    y   = np.array([5, 3, 8, 10, 4, 9, 7, 2, 4, 6])/10
-    fig = plt.figure(figsize=(16,9))
-    ax  = fig.add_subplot(111)
-    ax.bar(xd, y, color='b', edgecolor='k')
-    ax.axis([0, L+1, 0-dy, 1+dy])
-    ax.set_xticks(xd)
-    ax.tick_params(axis='both', labelsize=20)
-    ax.set_xlabel('numerosity', fontsize=24)
-    ax.set_ylabel('activity', fontsize=24)
-    ax.set_title('Distinct Numerosity Pattern', fontsize=24)
-    # fig.savefig('Figures_Talk/Talk_Figure_1.png', dpi=150)
-    
-    # Figure 2: smooth pattern
-    mu  = 4
-    fwhm= 8
-    sig = NumpRF.fwhm2sig(fwhm)
-    y   = NumpRF.f_lin(xd, mu, sig)
-    fig = plt.figure(figsize=(16,9))
-    ax  = fig.add_subplot(111)
-    ax.bar(xd, y, color='b', edgecolor='k')
-    ax.axis([0, L+1, 0-dy, 1+dy])
-    ax.set_xticks(xd)
-    ax.tick_params(axis='both', labelsize=20)
-    ax.set_xlabel('numerosity', fontsize=24)
-    ax.set_ylabel('activity', fontsize=24)
-    ax.set_title('Smooth Numerosity Pattern', fontsize=24)
-    # fig.savefig('Figures_Talk/Talk_Figure_2.png', dpi=150)
-    
-    # Figure 3: linear Gaussian tuning function
-    dx  = 0.1
-    xc  = np.arange(dx, L+1, dx)
-    y   = NumpRF.f_lin(xc, mu, sig)
-    fig = plt.figure(figsize=(16,9))
-    ax  = fig.add_subplot(111)
-    ax.plot(xc, y, '-b', linewidth=3)
-    ax.axis([0, L+1, 0-dy, 1+dy])
-    ax.set_xticks(xd)
-    ax.tick_params(axis='both', labelsize=20)
-    ax.set_xlabel('numerosity', fontsize=24)
-    ax.set_ylabel('activity', fontsize=24)
-    ax.set_title('Linear Gaussian Tuning', fontsize=24)
-    # fig.savefig('Figures_Talk/Talk_Figure_3.png', dpi=150)
-    
-    # Figure 4: logarithmic Gaussian tuning function
-    y   = NumpRF.f_log(xc, np.log(mu), NumpRF.lin2log(mu,fwhm)[1])
-    fig = plt.figure(figsize=(16,9))
-    ax  = fig.add_subplot(111)
-    ax.plot(xc, y, '-b', linewidth=2)
-    ax.axis([0, L+1, 0-dy, 1+dy])
-    ax.set_xticks(xd)
-    ax.tick_params(axis='both', labelsize=20)
-    ax.set_xlabel('numerosity', fontsize=24)
-    ax.set_ylabel('activity', fontsize=24)
-    ax.set_title('Logarithmic Gaussian Tuning', fontsize=24)
-    # fig.savefig('Figures_Talk/Talk_Figure_4.png', dpi=150)
-    
-    # Figure 4: logarithmic Gaussian tuning function (with mu and fwhm)
-    (mu_log, sig_log) = NumpRF.lin2log(mu, fwhm)
-    y   = NumpRF.f_log(xc, mu_log, sig_log)
-    fig = plt.figure(figsize=(16,9))
-    ax  = fig.add_subplot(111)
-    x1  = np.exp(mu_log - math.sqrt(2*math.log(2))*sig_log)
-    x2  = np.exp(mu_log + math.sqrt(2*math.log(2))*sig_log)
-    ax.plot(xc, y, '-b', linewidth=2)
-    ax.plot([mu, mu], [0,1], '-', color='gray', linewidth=2)
-    ax.plot([x1, x2], [0.5,0.5], '-', color='gray', linewidth=2)
-    ax.text(mu, 0+0.01, ' mu = preferred numerosity', fontsize=16, \
-            horizontalalignment='left', verticalalignment='bottom')
-    ax.text((x1+x2)/2, 0.5-0.01, 'fwhm = tuning width', fontsize=16, \
-            horizontalalignment='center', verticalalignment='top')
-    ax.axis([0, L+1, 0-dy, 1+dy])
-    ax.set_xticks(xd)
-    ax.tick_params(axis='both', labelsize=20)
-    ax.set_xlabel('numerosity', fontsize=24)
-    ax.set_ylabel('activity', fontsize=24)
-    ax.set_title('Logarithmic Gaussian Tuning', fontsize=24)
-    # fig.savefig('Figures_Talk/Talk_Figure_4a.png', dpi=150)
-    
-    # Figure A: linear to logarithmic tuning
-    xcl = np.arange(-5, 10, dx/2)
-    ycl = NumpRF.f_lin(xcl, mu_log, sig_log)
-    
-    # Figure A: function
-    def Figure_A(exp):
-        if exp == 2.7: exp = np.exp(1)
-        fig = plt.figure(figsize=(16,9))
-        ax  = fig.add_subplot(111)
-        ax.plot(np.power(exp, xcl), ycl, '-b', linewidth=2)
-        ax.axis([0, L+1, 0-dy, 1+dy])
-        ax.set_xticks(xd)
-        ax.tick_params(axis='both', labelsize=20)
-        if exp > 2:
-            ax.set_xlabel('numerosity', fontsize=24)
-        else:
-            ax.set_xlabel('logarithmized numerosity', fontsize=24)
-        ax.set_ylabel('activity', fontsize=24)
-        ax.set_title('Logarithmic Gaussian Tuning', fontsize=24)
-        return fig
-    
-    # Figure A: create GIF
-    images = []
-    exps   = np.concatenate((np.arange(2.7, 1.2, -0.1), np.arange(1.3, 2.8, 0.1)))
-    for exp in exps:
-        fig = Figure_A(exp)
-        filename = 'Figures_Talk/Talk_Figure_A_temp.png'
-        fig.savefig(filename, dpi=150)
-        images.append(imageio.imread(filename))
-    os.remove(filename)
-    imageio.mimsave('Figures_Talk/Talk_Figure_A.gif', images, fps=10, loop=0)
-    del fig, images, exps
-    
-    # Figure 5: different tuning functions
-    labels = ['low-numerosity neuron', 'high-numerosity neuron', 'no numerosity response']
-    colors = ['g','b','r']
-    (mu1, fwhm1)        = (1.5, 3)
-    (mu2, fwhm2)        = (mu, fwhm)
-    (mu_log1, sig_log1) = NumpRF.lin2log(mu1, fwhm1)
-    (mu_log2, sig_log2) = NumpRF.lin2log(mu2, fwhm2)
-    ys  =[NumpRF.f_log(xc, mu_log1, sig_log1), \
-          NumpRF.f_log(xc, mu_log2, sig_log2), \
-          np.zeros(xc.shape)]
-    fig = plt.figure(figsize=(16,9))
-    ax  = fig.add_subplot(111)
-    for k in range(3):
-        ax.plot(xc, ys[k], '-'+colors[k], linewidth=2, label=labels[k])
-    ax.axis([0, L+1, 0-dy, 1+dy])
-    ax.set_xticks(xd)
-    ax.legend(loc='upper right', fontsize=16)
-    ax.tick_params(axis='both', labelsize=20)
-    ax.set_xlabel('numerosity', fontsize=24)
-    ax.set_ylabel('activity', fontsize=24)
-    ax.set_title('Differently Tuned Neurons', fontsize=24)
-    # fig.savefig('Figures_Talk/Talk_Figure_5.png', dpi=150)
-    
-    # Figure 6: hemodynamic response function
-    dy  = 0.1
-    dt  = 0.1
-    tH  = np.arange(0, 32, dt)
-    y   = PySPM.spm_hrf(dt)
-    fig = plt.figure(figsize=(16,9))
-    ax  = fig.add_subplot(111)
-    ax.plot(tH, y, '-m', linewidth=2)
-    ax.axis([0, np.max(tH)+dt, 0-dy, 1+dy])
-    ax.tick_params(axis='both', labelsize=20)
-    ax.set_xlabel('post-stimulus time [s]', fontsize=24)
-    ax.set_ylabel('hemodynamic response', fontsize=24)
-    ax.set_title('Hemodynamic Response Function', fontsize=24)
-    # fig.savefig('Figures_Talk/Talk_Figure_6.png', dpi=150)
-    
-    # Figure B: stimuli, neuronal and hemodynamic signals
-    np.random.seed(1)
-    ons, dur, stim = EMPRISE.Session('001', 'visual').get_onsets()
-    ons, dur, stim = EMPRISE.onsets_trials2blocks(ons, dur, stim, 'closed')
-    ons, dur, stim = EMPRISE.correct_onsets(ons[0], dur[0], stim[0])
-    dur[-1] = 15.6
-    # (ons,dur,stim) = (ons[0], dur[0], stim[0])
-    T   = math.ceil(np.max(ons+dur))
-    dt  = EMPRISE.TR/EMPRISE.mtr
-    ons0= np.round(np.array(ons)/dt)
-    dur0= np.round(np.array(dur)/dt)
-    X   = np.zeros(math.ceil(T/dt))
-    tX  = np.arange(0,T,dt)
-    for o,d,s in zip(ons0,dur0,stim):
-        X[int(o):(int(o)+int(d))] = s
-    for i in range(1,X.size-1):
-        if X[i] == 0 and X[i-1] != 0 and X[i+1] != 0: X[i] = X[i-1]
-    Z1, tZ = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr, np.array([mu_log1]), np.array([sig_log1]))
-    Z2, tZ = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr, np.array([mu_log2]), np.array([sig_log2]))
-    Z3     = np.zeros(Z1.shape)
-    nZ     = EMPRISE.scans_per_epoch # EMPRISE.n
-    Y1, tY = NumpRF.hemodynamic_signals(Z1, tZ, nZ, EMPRISE.mtr, EMPRISE.mto)
-    Y2, tY = NumpRF.hemodynamic_signals(Z2, tZ, nZ, EMPRISE.mtr, EMPRISE.mto)
-    Y3     = np.zeros(Y1.shape)
-    Z      = np.c_[Z1, Z2, Z3]
-    Y      = np.c_[Y1[:,:,0], Y2[:,:,0], Y3[:,:,0]]
-    Yn     = Y + np.random.normal(0, 0.2, Y.shape)
-    del T, ons0, dur0, o, d, s, Z1, Z2, Z3, Y1, Y2, Y3
-    
-    # Figure B: function
-    def Figure_B(t):
-        
-        # select current stimulus
-        x = X[np.argmin(abs(tX-t))]
-        
-        # Panel A: stimuli
-        fig = plt.figure(figsize=(16,9))
-        axs = fig.subplots(3, 2, width_ratios=[1,2])
-        axs[0,0].remove()
-        axs[0,1].plot(tX[tX<=t], X[tX<=t], '-k', linewidth=2)
-        axs[0,1].axis([0-10*dt, np.max(tY)+10*dt, 0-5*dy, 7+5*dy])
-        axs[0,1].set_xticks([])
-        axs[0,1].set_yticks(list(range(1,6)))
-        axs[0,1].tick_params(axis='both', labelsize=16)
-        axs[0,1].set_ylabel('numerosity', fontsize=24)
-        axs[0,1].set_title('Presented Stimuli', fontsize=28)
-        for i in range(len(ons)):
-            axs[0,1].plot(np.array([ons[i],ons[i]]), np.array([6+5*dy, 7+5*dy]), '-k')
-            axs[0,1].text(ons[i]+(1/2)*dur[i], np.mean([6+5*dy, 7+5*dy]), str(stim[i]), fontsize=16,
-                          horizontalalignment='center', verticalalignment='center')
-        axs[0,1].plot(np.array([ons[-1]+dur[-1],ons[-1]+dur[-1]]), np.array([6+5*dy, 7+5*dy]), '-k')
-        axs[0,1].plot(np.array([ons[0],ons[-1]+dur[-1]]), np.array([6+5*dy, 6+5*dy]), '-k')
-        
-        # Panel B: neuronal signals
-        cols_alt = ['lightgreen', 'lightskyblue']
-        for k in range(3):
-            axs[1,1].plot(tZ[tZ<=t], Z[tZ<=t,k], '-'+colors[k], linewidth=2)
-            if k < 2:
-                axs[1,1].plot([0-10*dt,t], [Z[np.argmin(abs(tZ-t)),k], Z[np.argmin(abs(tZ-t)),k]], '-', color=cols_alt[k], linewidth=2)
-                axs[1,1].plot(t, Z[np.argmin(abs(tZ-t)),k], 'o'+colors[k], markerfacecolor=colors[k], markersize=10, linewidth=2)
-        axs[1,1].axis([0-10*dt, np.max(tY)+10*dt, 0-dy, 1+dy])
-        axs[1,1].set_xticks([])
-        axs[1,1].set_yticks([0,1])
-        axs[1,1].tick_params(axis='both', labelsize=16)
-        axs[1,1].set_ylabel('activity', fontsize=24)
-        axs[1,1].set_title('Neuronal Signals', fontsize=28)
-        
-        # Panel C: hemodynamic signals
-        for k in range(3):
-            if t <= np.round(np.max(tX)):
-                axs[2,1].plot(tY[tY<=t], Y[tY<=t,k], '-'+colors[k], linewidth=2)
-            else:
-                axs[2,1].plot(tY[tY<=t], Yn[tY<=t,k], '-'+colors[k], linewidth=2)
-        axs[2,1].axis([0-10*dt, np.max(tY)+10*dt, 0-dy, 1+dy])
-        axs[2,1].set_yticks([0,1])
-        axs[2,1].tick_params(axis='both', labelsize=16)
-        axs[2,1].set_xlabel('time [s]', fontsize=24)
-        axs[2,1].set_ylabel('activity', fontsize=24)
-        if t <= np.round(np.max(tX)):
-            axs[2,1].set_title('Hemodynamic Signals', fontsize=28)
-        else:
-            axs[2,1].set_title('Hemodynamic Signals + Noise', fontsize=28)
-    
-        # Panel D: logarithmic tuning functions
-        labels = ['low', 'high', 'null']
-        for k in range(3):
-            axs[1,0].plot(xc, ys[k], '-'+colors[k], linewidth=2, label=labels[k])
-            if k < 2:
-                axs[1,0].plot([x,L+1], [ys[k][np.argmin(abs(xc-x))], ys[k][np.argmin(abs(xc-x))]], '-', color=cols_alt[k], linewidth=2)
-                axs[1,0].plot(x, ys[k][np.argmin(abs(xc-x))], 'o'+colors[k], markerfacecolor=colors[k], markersize=10, linewidth=2)
-        axs[1,0].axis([0, L+1, 0-dy, 1+dy])
-        axs[1,0].set_xticks(xd)
-        axs[1,0].legend(loc='upper right', fontsize=12)
-        axs[1,0].tick_params(axis='both', labelsize=16)
-        axs[1,0].set_xlabel('numerosity', fontsize=24)
-        axs[1,0].set_ylabel('activity', fontsize=24)
-        axs[1,0].set_title('Tuning Functions', fontsize=28)
-        
-        # Panel E: hemodynamic response function
-        axs[2,0].plot(tH, y, '-m', linewidth=2, label='HRF')
-        axs[2,0].axis([0, np.max(tH)+dt, 0-dy, 1+dy])
-        axs[2,0].legend(loc='upper right', fontsize=12)
-        axs[2,0].tick_params(axis='both', labelsize=16)
-        axs[2,0].set_xlabel('post-stimulus time [s]', fontsize=24)
-        axs[2,0].set_ylabel('response', fontsize=24)
-        return fig
-    
-    # Figure B: create GIF
-    images = []
-    ts     = range(76)
-    for t in ts:
-        fig = Figure_B(t)
-        filename = 'Figures_Talk/Talk_Figure_B_temp.png'
-        fig.savefig(filename, dpi=150)
-        images.append(imageio.imread(filename))
-    os.remove(filename)
-    imageio.mimsave('Figures_Talk/Talk_Figure_B.gif', images, fps=10, loop=0)
-    del fig, images, ts
-    
-    # Figure B: with noise
-    fig = Figure_B(75)
-    # fig.savefig('Figures_Talk/Talk_Figure_7.png', dpi=150)
-    fig = Figure_B(76)
-    # fig.savefig('Figures_Talk/Talk_Figure_8.png', dpi=150)
-
-# function: Work Package 1, Table 0
-#-----------------------------------------------------------------------------#
-def WP1_Tab0():
-
-    # read participant table
-    filename  = EMPRISE.data_dir+'participants.tsv'
-    part_info = pd.read_table(filename)
-    subs      = EMPRISE.adults + EMPRISE.childs
-    
-    # preallocate table columns
-    group     = []
-    gender    = []
-    age       = []
-    num_runs  = []
-    func_runs = []
-    anat_dir  = []
-    surf_imgs = []
-    
-    # collect subject information
-    for sub in subs:
-        
-        # get subject info
-        sub_info = part_info[part_info['participant_id']=='sub-'+sub]
-        if sub in EMPRISE.adults:
-            group.append('adult')
-        elif sub in EMPRISE.childs:
-            group.append('child')
-        else:
-            group.append('unknown')
-        gender.append(sub_info.iloc[0,2])
-        age.append(np.mean(np.unique(sub_info['age'])))
-        
-        # check functional runs
-        num_str  = []
-        runs_str = []
-        for ses in EMPRISE.sess:
-            sess = EMPRISE.Session(sub,ses)
-            runs = ''
-            for run in EMPRISE.runs:
-                if os.path.isfile(sess.get_bold_gii(run)):
-                    runs = runs + str(run)
-            num_str.append(len(runs))
-            runs_str.append(runs)
-        num_runs.append(num_str)
-        func_runs.append(runs_str)
-        del num_str, runs_str
-        
-        # check anatomical directory
-        sess       = EMPRISE.Session(sub,'visual')
-        mesh_files = sess.get_mesh_files()
-        mesh_file  = mesh_files['left']
-        anat_fold  = mesh_file[mesh_file.find('sub-')+len('sub-000'): \
-                               mesh_file.find('anat/')]
-        anat_dir.append(anat_fold)
-        del mesh_file, mesh_files
-        
-        # check surface images
-        surfs    = ['inflated','pial','white','midthickness']
-        surf_str = []
-        for surf in surfs:
-            mesh_files = sess.get_mesh_files('fsnative',surf)
-            if mesh_files['left'] == 'n/a':
-                surf_str.append('no')
-            else:
-                surf_str.append('yes')
-        surf_imgs.append(surf_str)
-        del surf_str, mesh_files
-        
-    # create subject columns
-    num_visual_runs = [x[0] for x in num_runs]
-    num_audio_runs  = [x[1] for x in num_runs]
-    num_digit_runs  = [x[2] for x in num_runs]
-    num_spoken_runs = [x[3] for x in num_runs]
-    visual_runs     = [s[0] for s in func_runs]
-    audio_runs      = [s[1] for s in func_runs]
-    digit_runs      = [s[2] for s in func_runs]
-    spoken_runs     = [s[3] for s in func_runs]
-    infl_mesh       = [b[0] for b in surf_imgs]
-    pial_mesh       = [b[1] for b in surf_imgs]
-    white_mesh      = [b[2] for b in surf_imgs]
-    midthick_mesh   = [b[3] for b in surf_imgs]
-    
-    # create data frame
-    data = zip(subs, group, gender, age, \
-               num_visual_runs, num_audio_runs, num_digit_runs, num_spoken_runs, \
-               visual_runs, audio_runs, digit_runs, spoken_runs, \
-               anat_dir, infl_mesh, pial_mesh, white_mesh, midthick_mesh)
-    cols = ['Subject_ID', 'group', 'gender', 'age', \
-            'num_visual_runs', 'num_audio_runs', 'num_digit_runs', 'num_spoken_runs', \
-            'visual_runs', 'audio_runs', 'digit_runs', 'spoken_runs', \
-            'anat_dir', 'inflated_mesh', 'pial_mesh', 'white_mesh', 'midthickness_mesh']
-    df = pd.DataFrame(data, columns=cols)
-    
-    # save data frame to CSV/XLS
-    filename = 'subjects.csv'
-    df.to_csv(filename, index=False)
-    filename = 'subjects.xlsx'
-    df.to_excel(filename, index=False)
 
 # function: Work Package 1, Table 1
 #-----------------------------------------------------------------------------#
@@ -977,7 +556,7 @@ def WP1_Fig1(Figure):
     
     # sub-function: plot tuning functions & time courses
     #-------------------------------------------------------------------------#
-    def plot_tuning_function_time_course(sub, ses, model, hemi, space, verts=[0,0], col='b'):
+    def plot_tuning_function_time_course(sub, ses, model, hemi, space, cv=True, verts=[0,0], col='b'):
         
         # load session data
         mod            = EMPRISE.Model(sub, ses, model, space)
@@ -997,6 +576,13 @@ def WP1_Fig1(Figure):
         fwhm     = np.squeeze(NpRF['fwhm_est'])
         beta     = np.squeeze(NpRF['beta_est'])
         
+        # determine tuning function
+        try:
+            ver = NpRF['version'][0]
+        except KeyError:
+            ver = 'V2'
+        linear_model = 'lin' in ver
+        
         # load vertex-wise coordinates
         hemis     = {'L': 'left', 'R': 'right'}
         para_map  = res_file[:res_file.find('numprf.mat')] + 'mu.surf.gii'
@@ -1005,13 +591,21 @@ def WP1_Fig1(Figure):
         mesh_gii  = nib.load(mesh_file)
         XYZ       = mesh_gii.darrays[0].data
         XYZ       = XYZ[para_mask,:]
-        del para_map, para_mask, mesh_file, mesh_gii
+        del para_map, mesh_file, mesh_gii
         
-        # calculate vertex-wise R-squared
-        MLL1 = np.squeeze(NpRF['MLL_est'])
-        MLL0 = np.squeeze(NpRF['MLL_const'])
-        n    = np.prod(mod.calc_runs_scans())
-        Rsq  = NumpRF.MLL2Rsq(MLL1, MLL0, n)
+        # if CV, load cross-validated R^2
+        if cv:
+            Rsq_map = res_file[:res_file.find('numprf.mat')] + 'cvRsq.surf.gii'
+            cvRsq   = nib.load(Rsq_map).darrays[0].data
+            Rsq     = cvRsq[para_mask]
+            del Rsq_map, para_mask, cvRsq
+            
+        # otherwise, calculate total R^2
+        else:
+            MLL1 = np.squeeze(NpRF['MLL_est'])
+            MLL0 = np.squeeze(NpRF['MLL_const'])
+            n    = np.prod(mod.calc_runs_scans())
+            Rsq  = NumpRF.MLL2Rsq(MLL1, MLL0, n)
         
         # select vertices for plotting
         for k, vertex in enumerate(verts):
@@ -1024,8 +618,8 @@ def WP1_Fig1(Figure):
                     vertex = np.argmax(Rsq + np.logical_and(mu>1, mu<2))
                 elif k == 1:
                     # select maximum R^2 in vertices with numerosity 4 < mu < 5 or 3 < mu < 5
-                    if ses == 'visual': vertex = np.argmax(Rsq + np.logical_and(mu>4, mu<5))
-                    if ses == 'audio':  vertex = np.argmax(Rsq + np.logical_and(mu>3, mu<5))
+                    if ses == 'visual': vertex = np.argmax(Rsq + np.logical_and(mu>4, mu<5) + (fwhm<EMPRISE.fwhm_thr[1]) + (beta>0))
+                    if ses == 'audio':  vertex = np.argmax(Rsq + np.logical_and(mu>3, mu<5) + (fwhm<EMPRISE.fwhm_thr[1]) + (beta>0))
                 verts[k] = vertex
         
         # plot selected vertices
@@ -1040,12 +634,19 @@ def WP1_Fig1(Figure):
         for k, vertex in enumerate(verts):
         
             # compute vertex tuning function
-            mu_log, sig_log = NumpRF.lin2log(mu[vertex], fwhm[vertex])
             x  = np.arange(dx, xm+dx, dx)
-            y  = NumpRF.f_log(x, mu_log, sig_log)
             xM = mu[vertex]
-            x1 = np.exp(mu_log - math.sqrt(2*math.log(2))*sig_log)
-            x2 = np.exp(mu_log + math.sqrt(2*math.log(2))*sig_log)
+            if not linear_model:
+                mu_log, sig_log = NumpRF.lin2log(mu[vertex], fwhm[vertex])
+                y  = NumpRF.f_log(x, mu_log, sig_log)
+                x1 = np.exp(mu_log - math.sqrt(2*math.log(2))*sig_log)
+                x2 = np.exp(mu_log + math.sqrt(2*math.log(2))*sig_log)
+            else:
+                mu_lin, sig_lin = (mu[vertex], NumpRF.fwhm2sig(fwhm[vertex]))
+                y  = NumpRF.f_lin(x, mu_lin, sig_lin)
+                x1 = mu[vertex] - fwhm[vertex]/2
+                x2 = mu[vertex] + fwhm[vertex]/2
+            x1 = np.max(np.array([0,x1]))
             x2 = np.min(np.array([x2,xm]))
             
             # plot vertex tuning function
@@ -1075,7 +676,7 @@ def WP1_Fig1(Figure):
                           horizontalalignment='right', verticalalignment='top')
             axs[k,0].text(xm-(1/20)*xm, 0.05, txt2, fontsize=18,
                           horizontalalignment='right', verticalalignment='bottom')
-            del mu_log, sig_log, x, y, xM, x1, x2
+            del x, y, xM, x1, x2
         
         # Figure 1B: predicted time courses
         for k, vertex in enumerate(verts):
@@ -1089,11 +690,14 @@ def WP1_Fig1(Figure):
                 y_reg[:,:,j] = glm.Y - glm.X @ b_reg
             
             # get vertex tuning parameters
-            mu_log, sig_log = NumpRF.lin2log(mu[vertex], fwhm[vertex])
+            if not linear_model:
+                mu_k, sig_k = NumpRF.lin2log(mu[vertex], fwhm[vertex])
+            else:
+                mu_k, sig_k = (mu[vertex], NumpRF.fwhm2sig(fwhm[vertex]))
             
             # compute predicted signal (run)
             y_run, t = EMPRISE.average_signals(y_reg, None, [True, False])
-            z, t = NumpRF.neuronal_signals(ons0, dur0, stim0, EMPRISE.TR, EMPRISE.mtr, np.array([mu_log]), np.array([sig_log]))
+            z, t = NumpRF.neuronal_signals(ons0, dur0, stim0, EMPRISE.TR, EMPRISE.mtr, np.array([mu_k]), np.array([sig_k]), lin=linear_model)
             s, t = NumpRF.hemodynamic_signals(z, t, EMPRISE.n, EMPRISE.mtr)
             glm  = PySPM.GLM(y_run, np.c_[s[:,:,0], np.ones((EMPRISE.n, 1))])
             b_run= glm.OLS()
@@ -1102,7 +706,7 @@ def WP1_Fig1(Figure):
             # compute predicted signal (epoch)
             y_avg, t = EMPRISE.average_signals(y_reg, None, [True, True])
             # Note: For visualization purposes, we here apply "avg = [True, True]".
-            z, t = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr, np.array([mu_log]), np.array([sig_log]))
+            z, t = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr, np.array([mu_k]), np.array([sig_k]), lin=linear_model)
             s, t = NumpRF.hemodynamic_signals(z, t, EMPRISE.scans_per_epoch, EMPRISE.mtr)
             glm  = PySPM.GLM(y_avg, np.c_[s[:,:,0], np.ones((EMPRISE.scans_per_epoch, 1))])
             b_avg= glm.OLS()
@@ -1111,8 +715,13 @@ def WP1_Fig1(Figure):
             # assess statistical significance
             Rsq_run = Rsq[vertex]
             Rsq_avg = NumpRF.yp2Rsq(y_avg, s_avg)[0]
-            h, p_run, stats = NumpRF.Rsqtest(y_run, s_run, p=4)
-            h, p_avg, stats = NumpRF.Rsqtest(y_avg, s_avg, p=4)
+            p       = [4,2][int(cv)]
+            # Note: Typically, we loose 4 degrees of freedom for estimating 4
+            # parameters (mu, fwhm, beta, beta_0). But if tuning parameters
+            # (mu, fwhm) come from independent data, we only loose 2 degrees
+            # of freedom for estimating 2 parameters (beta, beta_0).
+            p_run = NumpRF.Rsq2pval(Rsq_run, EMPRISE.n, p)
+            p_avg = NumpRF.Rsq2pval(Rsq_avg, y_avg.size, p)
             
             # prepare axis limits
             y_min = np.min(y_avg)
@@ -1123,8 +732,8 @@ def WP1_Fig1(Figure):
             yM    = np.max(s_avg)
             y0    = b_avg[1,0]
             
-            # plot hemodynamic signals signals
-            txt = 'beta = {:.2f}\nR² = {:.2f}, {}\n '. \
+            # plot hemodynamic signals
+            txt = 'beta = {:.2f}\ncvR² = {:.2f}, {}\n '. \
                    format(beta[vertex], Rsq_run, pvalstr(p_run))
             # Note: For visualization purposes, we here apply "avg = [True, True]".
             axs[k,1].plot(t, y_avg[:,0], ':ok', markerfacecolor='k', markersize=8, linewidth=1, label='measured signal')
@@ -1152,7 +761,7 @@ def WP1_Fig1(Figure):
             axs[k,1].tick_params(axis='both', labelsize=18)
             axs[k,1].text((1/20)*t_max, y_min-(1/20)*y_rng, txt, fontsize=18, \
                           horizontalalignment='left', verticalalignment='bottom')
-            del y, y_reg, y_avg, z, s, s_avg, t, b_reg, b_avg, mu_log, sig_log, y_min, y_max, y_rng, txt
+            del y, y_reg, y_avg, z, s, s_avg, t, b_reg, b_avg, mu_k, sig_k, y_min, y_max, y_rng, txt
             
         # return figure
         return fig
@@ -1172,8 +781,16 @@ def WP1_Fig1(Figure):
         fig.savefig('Figures_WP1/WP1_Figure_1_ses-visual.png', dpi=150, transparent=True)
         
         # Figure 1, Part 2: auditory data
-        fig = plot_tuning_function_time_course(sub_audio, 'audio', model, 'L', space, verts=[0,0], col='r')
+        fig = plot_tuning_function_time_course(sub_audio, 'audio', model, 'R', space, verts=[0,0], col='r')
         fig.savefig('Figures_WP1/WP1_Figure_1_ses-audio.png', dpi=150, transparent=True)
+        
+        # Figure 1, Part 1: visual data (fsaverage)
+        fig = plot_tuning_function_time_course(sub_visual, 'visual', model, 'L', 'fsaverage', verts=[0,0], col='b')
+        fig.savefig('Figures_WP1/WP1_Figure_1_ses-visual_space-fsaverage.png', dpi=150, transparent=True)
+        
+        # Figure 1, Part 2: auditory data (fsaverage)
+        fig = plot_tuning_function_time_course(sub_audio, 'audio', model, 'R', 'fsaverage', verts=[0,0], col='r')
+        fig.savefig('Figures_WP1/WP1_Figure_1_ses-audio_space-fsaverage.png', dpi=150, transparent=True)
     
     # Figure S1
     if Figure == 'S1':
@@ -1189,9 +806,18 @@ def WP1_Fig1(Figure):
     
         # Figure S2: all subjects, audio
         for sub in subs_all:
-            fig = plot_tuning_function_time_course(sub, 'audio', model, 'L', space, verts=[0], col='r')
+            fig = plot_tuning_function_time_course(sub, 'audio', model, 'R', space, verts=[0], col='r')
             filename = 'Figures_WP1/WP1_Figure_S2'+'_ses-'+'audio'+'_sub-'+sub+'.png'
             fig.savefig(filename, dpi=150, transparent=True)
+    
+    # Figure S9
+    if Figure == 'S9':
+        
+        # Figure S9: audio subject
+        model = 'True_False_iid_1_V2-lin_new'
+        fig   = plot_tuning_function_time_course(sub_audio, 'audio', model, 'R', space, verts=[0,0], col='r')
+        fig.savefig('Figures_WP1/WP1_Figure_S9_ses-audio'+'_sub-'+sub_audio+'.png', dpi=150, transparent=True)
+
 
 # function: Work Package 1, Figure 2
 #-----------------------------------------------------------------------------#
@@ -1199,19 +825,34 @@ def WP1_Fig2(Figure):
     
     # sub-function: plot surface parameter map
     #-------------------------------------------------------------------------#
-    def plot_surface_para(sub, ses, model, space, para='mu', Rsq_thr=None):
+    def plot_surface_para(sub, ses, model, space, para='mu', cv=True, Rsq_thr=None, alpha_thr=None, meth_str=''):
         
         # load analysis details
         mod = EMPRISE.Model(sub, ses, model, space)
-        n   = np.prod(mod.calc_runs_scans())# effective number of
-                                            # observations in model
+        n   = np.prod(mod.calc_runs_scans())# effective number of observations in model
+        p   = [4,2][int(cv)]                # number of explanatory variables used for R^2
+                                            
         # specify thresholds
-        if Rsq_thr is None:                 # for details, see
-            Rsq_thr = EMPRISE.Rsq_def       # EMPRISE global variables
-        mu_thr   = EMPRISE.mu_thr
+        if Rsq_thr is None:
+            if alpha_thr is None:
+                Rsq_thr = EMPRISE.Rsq_def
+        # Explanation: If "Rsq_thr" and "alpha_thr" are not specified, then "Rsq_thr" is specified.
+        elif Rsq_thr is not None:
+            if alpha_thr is not None:
+                Rsq_thr = None
+        # Explanation: If "Rsq_thr" and "alpha_thr" are both specified, then "Rsq_thr" is disspecified.
+        
+        # configure thresholds              # for details, see
+        mu_thr   = EMPRISE.mu_thr           # EMPRISE global variables
         fwhm_thr = EMPRISE.fwhm_thr
         beta_thr = EMPRISE.beta_thr
-        crit     = 'Rsqmb,'+str(Rsq_thr)
+        if Rsq_thr is not None:
+            crit = 'Rsqmb,'+ str(Rsq_thr)
+        elif alpha_thr is not None:
+            if alpha_thr < 0.001:
+                crit = 'Rsqmb,p='+ '{:1.2e}'.format(alpha_thr) + meth_str
+            else:
+                crit = 'Rsqmb,p='+ str(alpha_thr) + meth_str
         
         # analyze hemispheres
         hemis = {'L': 'left', 'R': 'right'}
@@ -1230,11 +871,20 @@ def WP1_Fig2(Figure):
             mu   = np.squeeze(NpRF['mu_est'])
             fwhm = np.squeeze(NpRF['fwhm_est'])
             beta = np.squeeze(NpRF['beta_est'])
-            MLL1 = np.squeeze(NpRF['MLL_est'])
-            MLL0 = np.squeeze(NpRF['MLL_const'])
             
-            # compute quantities for thresholding
-            Rsq   = NumpRF.MLL2Rsq(MLL1, MLL0, n)
+            # if CV, load cross-validated R^2
+            if cv:
+                Rsq_map = res_file[:res_file.find('numprf.mat')] + 'cvRsq.surf.gii'
+                cvRsq   = nib.load(Rsq_map).darrays[0].data
+                Rsq     = cvRsq[mask]
+                
+            # otherwise, calculate total R^2
+            else:
+                MLL1 = np.squeeze(NpRF['MLL_est'])
+                MLL0 = np.squeeze(NpRF['MLL_const'])
+                Rsq  = NumpRF.MLL2Rsq(MLL1, MLL0, n)
+            
+            # prepare quantities for thresholding
             ind_m = np.logical_or(mu<mu_thr[0], mu>mu_thr[1])
             ind_f = np.logical_or(fwhm<fwhm_thr[0], fwhm>fwhm_thr[1])
             ind_b = np.logical_or(beta<beta_thr[0], beta>beta_thr[1])
@@ -1242,7 +892,10 @@ def WP1_Fig2(Figure):
             # apply conditions for exclusion
             ind = mu > np.inf
             if 'Rsq' in crit:
-                ind = np.logical_or(ind, Rsq<Rsq_thr)
+                if not 'p=' in crit:
+                    ind = np.logical_or(ind, Rsq < Rsq_thr)
+                else:
+                    ind = np.logical_or(ind, ~NumpRF.Rsqsig(Rsq, n, p, alpha_thr, meth_str))
             if 'm' in crit:
                 ind = np.logical_or(ind, ind_m)
             if 'f' in crit:
@@ -1252,6 +905,7 @@ def WP1_Fig2(Figure):
             
             # threshold parameter map
             para_est       = {'mu': mu, 'fwhm': fwhm, 'beta': beta, 'Rsq': Rsq}
+            if para == 'cvRsq': para_est['cvRsq'] = para_est.pop('Rsq')
             para_map       = np.nan * np.ones(mask.size, dtype=np.float32)
             para_crit      = para_est[para]
             para_crit[ind] = np.nan
@@ -1260,6 +914,10 @@ def WP1_Fig2(Figure):
             para_img       = EMPRISE.save_surf(para_map, image, filename)
             maps[hemis[hemi]] = filename
             del para_crit, para_map, para_est, image, filename
+        
+        # specify threshold
+        if Rsq_thr is None: Rsq_thr = 0.0
+        # Explanation: If "alpha_thr" is used, set "Rsq_thr" to 0.0.
         
         # specify plotting
         if para == 'mu':
@@ -1277,11 +935,16 @@ def WP1_Fig2(Figure):
             cmap   = 'hot'
             clabel = 'scaling factor'
             cbar   = {'n_ticks': 6, 'decimals': 0}
-        elif para == 'Rsq':
+        elif para == 'Rsq' or para == 'cvRsq':
             caxis  = [Rsq_thr,1]
             cmap   = 'hot'
-            clabel = 'variance explained (R²)'
-            if Rsq_thr == 0.1:              # 0.1, 0.4, 0.7, 1.0
+            if para == 'Rsq':
+                clabel = 'variance explained (R²)'
+            elif para == 'cvRsq':
+                clabel = 'variance explained (cvR²)'
+            if Rsq_thr == 0.0:              # 0.0, 0.2, 0.4, 0.6, 0.8, 1.0
+                cbar   = {'n_ticks': 6, 'decimals': 1}
+            elif Rsq_thr == 0.1:            # 0.1, 0.4, 0.7, 1.0
                 cbar   = {'n_ticks': 4, 'decimals': 1}
             elif Rsq_thr == 0.15:           # 0.15, 0.32, 0.49, 0.66, 0.83, 1.00
                 cbar   = {'n_ticks': 6, 'decimals': 2}
@@ -1291,6 +954,8 @@ def WP1_Fig2(Figure):
                 cbar   = {'n_ticks': 4, 'decimals': 2}
             elif Rsq_thr == 0.3:            # 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
                 cbar   = {'n_ticks': 8, 'decimals': 1}
+            else:                           # otherwise, five ticks and two decimals
+                cbar   = {'n_ticks': 5, 'decimals': 2}
         cbar['fontsize'] = 24
         
         # specify mesh files
@@ -1320,30 +985,44 @@ def WP1_Fig2(Figure):
     
     # sub-function: plot participant count map
     #-------------------------------------------------------------------------#
-    def plot_participant_count(subs, ses, model, Rsq_thr=None):
+    def plot_participant_count(subs, ses, model, cv=True, Rsq_thr=None, alpha_thr=None, meth_str=''):
         
         # specify thresholds
-        if Rsq_thr is None:                 # for details, see
-            Rsq_thr = EMPRISE.Rsq_def       # EMPRISE global variables
-        mu_thr   = EMPRISE.mu_thr
+        if Rsq_thr is None:
+            if alpha_thr is None:
+                Rsq_thr = EMPRISE.Rsq_def
+        # Explanation: If "Rsq_thr" and "alpha_thr" are not specified, then "Rsq_thr" is specified.
+        elif Rsq_thr is not None:
+            if alpha_thr is not None:
+                Rsq_thr = None
+        # Explanation: If "Rsq_thr" and "alpha_thr" are both specified, then "Rsq_thr" is disspecified.
+        
+        # configure thresholds              # for details, see
+        mu_thr   = EMPRISE.mu_thr           # EMPRISE global variables
         fwhm_thr = EMPRISE.fwhm_thr
         beta_thr = EMPRISE.beta_thr
-        crit     = 'Rsqmb,'+str(Rsq_thr)
+        if Rsq_thr is not None:
+            crit = 'Rsqmb,'+ str(Rsq_thr)
+        elif alpha_thr is not None:
+            if alpha_thr < 0.001:
+                crit = 'Rsqmb,p='+ '{:1.2e}'.format(alpha_thr) + meth_str
+            else:
+                crit = 'Rsqmb,p='+ str(alpha_thr) + meth_str
         
         # prepare loading
         N     = len(subs)
         maps  = [{} for i in range(N)]
         hemis = {'L': 'left', 'R': 'right'}
-        space = 'fsaverage'
-        para  = 'Rsq'
+        space =  'fsaverage'
         
         # load all subjects
         for i, sub in enumerate(subs):
             
             # load analysis details
             mod = EMPRISE.Model(sub, ses, model, space)
-            n   = np.prod(mod.calc_runs_scans())# effective number of
-                                                # observations in model
+            n   = np.prod(mod.calc_runs_scans())# effective number of observations in model
+            p   = [4,2][int(cv)]                # number of explanatory variables used for R^2
+            
             # analyze hemispheres
             for hemi in hemis.keys():
                 
@@ -1359,11 +1038,20 @@ def WP1_Fig2(Figure):
                 mu   = np.squeeze(NpRF['mu_est'])
                 fwhm = np.squeeze(NpRF['fwhm_est'])
                 beta = np.squeeze(NpRF['beta_est'])
-                MLL1 = np.squeeze(NpRF['MLL_est'])
-                MLL0 = np.squeeze(NpRF['MLL_const'])
                 
-                # compute quantities for thresholding
-                Rsq   = NumpRF.MLL2Rsq(MLL1, MLL0, n)
+                # if CV, load cross-validated R^2
+                if cv:
+                    Rsq_map = res_file[:res_file.find('numprf.mat')] + 'cvRsq.surf.gii'
+                    cvRsq   = nib.load(Rsq_map).darrays[0].data
+                    Rsq     = cvRsq[mask]
+                    
+                # otherwise, calculate total R^2
+                else:
+                    MLL1 = np.squeeze(NpRF['MLL_est'])
+                    MLL0 = np.squeeze(NpRF['MLL_const'])
+                    Rsq  = NumpRF.MLL2Rsq(MLL1, MLL0, n)
+                
+                # prepare quantities for thresholding
                 ind_m = np.logical_or(mu<mu_thr[0], mu>mu_thr[1])
                 ind_f = np.logical_or(fwhm<fwhm_thr[0], fwhm>fwhm_thr[1])
                 ind_b = np.logical_or(beta<beta_thr[0], beta>beta_thr[1])
@@ -1371,7 +1059,10 @@ def WP1_Fig2(Figure):
                 # apply conditions for exclusion
                 ind = mu > np.inf
                 if 'Rsq' in crit:
-                    ind = np.logical_or(ind, Rsq<Rsq_thr)
+                    if not 'p=' in crit:
+                        ind = np.logical_or(ind, Rsq < Rsq_thr)
+                    else:
+                        ind = np.logical_or(ind, ~NumpRF.Rsqsig(Rsq, n, p, alpha_thr, meth_str))
                 if 'm' in crit:
                     ind = np.logical_or(ind, ind_m)
                 if 'f' in crit:
@@ -1380,13 +1071,12 @@ def WP1_Fig2(Figure):
                     ind = np.logical_or(ind, ind_b)
                 
                 # threshold R-squared map
-                para_est       = {'mu': mu, 'fwhm': fwhm, 'beta': beta, 'Rsq': Rsq}
                 para_map       = np.nan * np.ones(mask.size, dtype=np.float32)
-                para_crit      = para_est[para]
+                para_crit      = Rsq
                 para_crit[ind] = np.nan
                 para_map[mask] = para_crit
                 maps[i][hemis[hemi]] = para_map
-                del para_crit, para_map, para_est
+                del para_crit, para_map
         
         # specify target directory
         mod      = EMPRISE.Model('all', ses, model, space)
@@ -1443,54 +1133,55 @@ def WP1_Fig2(Figure):
     sess       =['visual', 'audio']
     model      = model_def
     space      = 'fsnative'
-    Rsq_thr    = 0.2
+    Rsq        = 0.2            # R² > 0.2
+    alpha      = 0.05           # p < 0.05
+    meth       = 'B'            # Bonferroni
     
     # Figure 2A
     if Figure == '2A':
         
         # Figure 2A, Part 1: visual data
-        fig = plot_surface_para(sub_visual, 'visual', model, space, 'Rsq', Rsq_thr)
+        fig = plot_surface_para(sub_visual, 'visual', model, space, para='cvRsq', alpha_thr=alpha, meth_str=meth)
         fig.savefig('Figures_WP1/WP1_Figure_2A_ses-visual.png', dpi=150, transparent=True)
         
         # Figure 2A, Part 2: auditory data
-        fig = plot_surface_para(sub_audio, 'audio', model, space, 'Rsq', Rsq_thr)
+        fig = plot_surface_para(sub_audio, 'audio', model, space, para='cvRsq', alpha_thr=alpha, meth_str=meth)
         fig.savefig('Figures_WP1/WP1_Figure_2A_ses-audio.png', dpi=150, transparent=True)
     
     # Figure 2B
     if Figure == '2B':
         
         # Figure 2B, Part 1: visual data
-        fig = plot_participant_count(subs_all, 'visual', model, Rsq_thr)
+        fig = plot_participant_count(subs_all, 'visual', model, alpha_thr=alpha, meth_str=meth)
         fig.savefig('Figures_WP1/WP1_Figure_2B_ses-visual.png', dpi=150, transparent=True)
         
         # Figure 2B, Part 2: audio data
-        fig = plot_participant_count(subs_all, 'audio', model, Rsq_thr)
+        fig = plot_participant_count(subs_all, 'audio', model, alpha_thr=alpha, meth_str=meth)
         fig.savefig('Figures_WP1/WP1_Figure_2B_ses-audio.png', dpi=150, transparent=True)
-        
+    
     # Figure 2B (different threshold)
     if Figure == '2Bp':
         
-        # specify p/R² threshold
-        pval = 0.001
-        Rsq  = NumpRF.pval2Rsq(0.001, EMPRISE.n, p=4)
+        # specify significance level
+        alpha = 0.001
         
         # Figure 2B, Part 1: visual data
-        fig = plot_participant_count(subs_all, 'visual', model, Rsq)
-        fig.savefig('Figures_WP1/WP1_Figure_2B_ses-visual_p-'+str(pval)+'.png', dpi=150, transparent=True)
+        fig = plot_participant_count(subs_all, 'visual', model, alpha_thr=alpha, meth_str='')
+        fig.savefig('Figures_WP1/WP1_Figure_2B_ses-visual_p-'+str(alpha)+'.png', dpi=150, transparent=True)
         
         # Figure 2B, Part 2: audio data
-        fig = plot_participant_count(subs_all, 'audio', model, Rsq)
-        fig.savefig('Figures_WP1/WP1_Figure_2B_ses-audio_p-'+str(pval)+'.png', dpi=150, transparent=True)
+        fig = plot_participant_count(subs_all, 'audio', model, alpha_thr=alpha, meth_str='')
+        fig.savefig('Figures_WP1/WP1_Figure_2B_ses-audio_p-'+str(alpha)+'.png', dpi=150, transparent=True)
     
     # Figure 2C
     if Figure == '2C':
         
         # Figure 2C, Part 1: visual data
-        fig = plot_surface_para(sub_visual, 'visual', model, space, 'mu', Rsq_thr)
+        fig = plot_surface_para(sub_visual, 'visual', model, space, para='mu', alpha_thr=alpha, meth_str=meth)
         fig.savefig('Figures_WP1/WP1_Figure_2C_ses-visual.png', dpi=150, transparent=True)
         
         # Figure 2C, Part 2: auditory data
-        fig = plot_surface_para(sub_audio, 'audio', model, space, 'mu', Rsq_thr)
+        fig = plot_surface_para(sub_audio, 'audio', model, space, para='mu', alpha_thr=alpha, meth_str=meth)
         fig.savefig('Figures_WP1/WP1_Figure_2C_ses-audio.png', dpi=150, transparent=True)
     
     # Figure S3
@@ -1499,7 +1190,7 @@ def WP1_Fig2(Figure):
         # Figure S3: all subjects, visual & audio
         for sub in subs_all:
             for ses in sess:
-                fig = plot_surface_para(sub, ses, model, space, 'Rsq', Rsq_thr)
+                fig = plot_surface_para(sub, ses, model, space, para='cvRsq', alpha_thr=alpha, meth_str=meth)
                 filename = 'Figures_WP1/WP1_Figure_S3'+'_ses-'+ses+'_sub-'+sub+'.png'
                 fig.savefig(filename, dpi=150, transparent=True)
     
@@ -1509,7 +1200,7 @@ def WP1_Fig2(Figure):
         # Figure S4: all subjects, visual & audio
         for sub in subs_all:
             for ses in sess:
-                fig = plot_surface_para(sub, ses, model, space, 'mu', Rsq_thr)
+                fig = plot_surface_para(sub, ses, model, space, para='mu', alpha_thr=alpha, meth_str=meth)
                 filename = 'Figures_WP1/WP1_Figure_S4'+'_ses-'+ses+'_sub-'+sub+'.png'
                 fig.savefig(filename, dpi=150, transparent=True)
 
@@ -1540,6 +1231,8 @@ def WP1_Fig3(Figure):
             # specify analysis
             subs  = EMPRISE.adults
             model = model_def
+            # if self.ses == 'visual': model = model_def
+            # if self.ses == 'audio':  model = 'True_False_iid_1_V2-lin_new'
             
             # add R^2 threshold
             Rsq_thr = 0.2
@@ -1561,7 +1254,7 @@ def WP1_Fig3(Figure):
                     if self.AFNI:
                         # extract vertices and triangles
                         verts[sub], trias[sub] = \
-                            mod.threshold_AFNI_cluster(crit, self.mesh)
+                            mod.threshold_AFNI_cluster(crit, self.mesh, cv=True)
                     else:
                         verts[sub] = {}
                         trias[sub] = {}
@@ -1586,399 +1279,6 @@ def WP1_Fig3(Figure):
             sp.io.savemat(filepath1+'trias.mat', trias)
             sp.io.savemat(filepath2+'verts.mat', verts)
             sp.io.savemat(filepath2+'areas.mat', areas)
-        
-        # sub-function: plot area vs. map
-        #---------------------------------------------------------------------#
-        def plot_area_vs_map(self, subs, cols=['b','r']):
-            
-            # load results
-            filepath = self.res_dir+'sub-adults'+'_ses-'+self.ses+'_space-'+self.space+'_mesh-'+self.mesh+'_'+self.pref
-            areas    = sp.io.loadmat(filepath+'areas.mat')
-    
-            # get surface areas
-            N = len(subs)
-            A = np.zeros((N,len(hemis)))
-            for i, sub in enumerate(subs):
-                for j, hemi in enumerate(hemis):
-                    areas_sub = areas[sub][hemi][0,0]
-                    A[i,j]    = np.sum(areas_sub[:,6])
-            
-            # open figure
-            fig = plt.figure(figsize=(16,9))
-            ax  = fig.add_subplot(111)
-            
-            # plot area vs. map
-            hdr = 'ses-{}'.format(self.ses)
-            ax.barh(np.arange(N), -A[:,0], color=cols[0], edgecolor='k', label='hemi-'+hemis[0])
-            ax.barh(np.arange(N), +A[:,1], color=cols[1], edgecolor='k', label='hemi-'+hemis[1])
-            ax.legend(loc='upper right', fontsize=16)
-            xt  = ax.get_xticks()
-            xtl = []
-            for x in xt:
-                xtl.append(str(int(abs(x))))
-            ax.set_xticks(xt, labels=xtl)
-            ax.set_yticks(np.arange(N), labels=subs)
-            ax.tick_params(axis='both', labelsize=16)
-            ax.axis([-(11/10)*np.max(A), +(11/10)*np.max(A), 0-1, N])
-            ax.invert_yaxis()
-            ax.set_xlabel('surface area [mm²]', fontsize=16)
-            ax.set_ylabel('subject ID', fontsize=16)
-            ax.set_title(hdr, fontweight='bold', fontsize=20)
-            
-            # display figure
-            fig.show()
-            return fig
-        
-        # sub-function: plot area vs. mu
-        #---------------------------------------------------------------------#
-        def plot_area_vs_mu(self, sub, d_mu=0.5, cols=['b','r']):
-            
-            # load results
-            filepath = self.res_dir+'sub-adults'+'_ses-'+self.ses+'_space-'+self.space+'_mesh-'+self.mesh+'_'+self.pref
-            verts    = sp.io.loadmat(filepath+'verts.mat')
-            areas    = sp.io.loadmat(filepath+'areas.mat')
-            
-            # specify mu grid
-            mu_min = EMPRISE.mu_thr[0]
-            mu_max = EMPRISE.mu_thr[1]
-            mu_b   = np.arange(mu_min, mu_max+d_mu, d_mu)
-            mu_c   = np.arange(mu_min+d_mu/2, mu_max+d_mu/2, d_mu)
-            
-            # preallocate results
-            area_s = np.zeros((len(hemis),mu_c.size))
-            r_a    = np.zeros(len(hemis))
-            p_a    = np.zeros(len(hemis))
-            b_a    = np.zeros((2,len(hemis)))
-            n_a    = np.zeros(len(hemis), dtype=np.int32)
-            
-            # for both hemispheres
-            for j, hemi in enumerate(hemis):
-                
-                # get supra-threshold vertices/triangles
-                verts_sub = verts[sub][hemi][0,0]
-                areas_sub = areas[sub][hemi][0,0]
-                mu_sub    = areas_sub[:,2]
-                area_sub  = areas_sub[:,6]
-                
-                # if supra-threshold vertices exist
-                if verts_sub.shape[0] > 0:
-                
-                    # go through numerosity bins
-                    for k in range(mu_c.size):
-                        
-                        # if this numerosity exists
-                        ind_k = np.logical_and(mu_sub>mu_b[k],mu_sub<mu_b[k+1])
-                        if np.sum(ind_k) > 0:
-                            area_s[j,k] = np.sum(area_sub[ind_k])
-                        else:
-                            area_s[j,k] = np.nan
-                    
-                    # calculate regression lines
-                    ind_j  =~np.isnan(area_s[j,:])
-                    n_a[j] = np.sum(ind_j)
-                    r_a[j], p_a[j], b_a[0,j], b_a[1,j] = \
-                        simplinreg(area_s[j,ind_j], mu_c[ind_j])
-                    del ind_k, ind_j
-            
-            # open figure
-            fig = plt.figure(figsize=(16,9))
-            ax  = fig.add_subplot(111)
-    
-            # plot area vs. mu
-            hdr = 'sub-{}, ses-{}'.format(sub, self.ses)
-            for j, hemi in enumerate(hemis):
-                if np.any(area_s[j,:]):
-                    lab_j = 'hemi-'+hemi+' (r = {:.2f}, {}, n = {})'. \
-                             format(r_a[j], pvalstr(p_a[j]), n_a[j])
-                    ax.plot(mu_c, area_s[j,:], 'o', \
-                            color=cols[j], markerfacecolor=cols[j], markersize=10)
-                    ax.plot([mu_min,mu_max], np.array([mu_min,mu_max])*b_a[0,j]+b_a[1,j], '-', \
-                            color=cols[j], label=lab_j)
-            if (sub == '003' and self.ses == 'visual') or (sub == '009' and self.ses == 'audio'):
-                if self.ses == 'visual': y_max = 1000
-                if self.ses == 'audio':  y_max = 100
-                ax.axis([mu_min-d_mu, mu_max+d_mu, 0-(1/20)*y_max, y_max+(1/20)*y_max])
-            else:
-                ax.set_xlim(mu_min-d_mu, mu_max+d_mu)
-            ax.legend(loc='upper right', fontsize=16)
-            ax.tick_params(axis='both', labelsize=16)
-            ax.set_xlabel('preferred numerosity', fontsize=16)
-            ax.set_ylabel('cortical surface area [mm²]', fontsize=16)
-            ax.set_title(hdr, fontweight='bold', fontsize=20)
-            
-            # display figure
-            fig.show()
-            return fig
-        
-        # sub-function: plot fwhm vs. mu
-        #---------------------------------------------------------------------#
-        def plot_fwhm_vs_mu(self, sub, d_mu=0.5, cols=['b','r']):
-            
-            # load results
-            filepath = self.res_dir+'sub-adults'+'_ses-'+self.ses+'_space-'+self.space+'_mesh-'+self.mesh+'_'+self.pref
-            verts    = sp.io.loadmat(filepath+'verts.mat')
-            
-            # specify mu grid
-            mu_min = EMPRISE.mu_thr[0]
-            mu_max = EMPRISE.mu_thr[1]
-            mu_b   = np.arange(mu_min, mu_max+d_mu, d_mu)
-            mu_c   = np.arange(mu_min+d_mu/2, mu_max+d_mu/2, d_mu)
-            
-            # preallocate results
-            fwhm_m  = np.zeros((len(hemis),mu_c.size))
-            fwhm_se = np.zeros((len(hemis),mu_c.size))
-            r_f     = np.zeros(len(hemis))
-            p_f     = np.zeros(len(hemis))
-            b_f     = np.zeros((2,len(hemis)))
-            n_f     = np.zeros(len(hemis), dtype=np.int32)
-            
-            # for both hemispheres
-            for j, hemi in enumerate(hemis):
-                
-                # get supra-threshold vertices
-                verts_sub = verts[sub][hemi][0,0]
-                mu_sub    = verts_sub[:,2]
-                fwhm_sub  = verts_sub[:,3]
-                
-                # if supra-threshold vertices exist
-                if verts_sub.shape[0] > 0:
-                
-                    # go through numerosity bins
-                    for k in range(mu_c.size):
-                        
-                        # if this numerosity exists
-                        ind_k = np.logical_and(mu_sub>mu_b[k],mu_sub<mu_b[k+1])
-                        if np.sum(ind_k) > 0:
-                            fwhm_m[j,k]  = np.mean(fwhm_sub[ind_k])
-                            fwhm_se[j,k] = np.std(fwhm_sub[ind_k])/math.sqrt(np.sum(ind_k))
-                        else:
-                            fwhm_m[j,k]  = np.nan
-                            fwhm_se[j,k] = np.nan
-                    
-                    # calculate regression lines
-                    ind_j  =~np.isnan(fwhm_m[j,:])
-                    n_f[j] = np.sum(ind_j)
-                    r_f[j], p_f[j], b_f[0,j], b_f[1,j] = \
-                        simplinreg(fwhm_m[j,ind_j], mu_c[ind_j])
-                    del ind_k, ind_j
-            
-            # open figure
-            fig = plt.figure(figsize=(16,9))
-            ax  = fig.add_subplot(111)
-    
-            # plot fwhm vs. mu
-            hdr = 'sub-{}, ses-{}'.format(sub, self.ses)
-            for j, hemi in enumerate(hemis):
-                if np.any(fwhm_m[j,:]):
-                    lab_j = 'hemi-'+hemi+' (r = {:.2f}, {}, n = {})'. \
-                             format(r_f[j], pvalstr(p_f[j]), n_f[j])
-                    ax.plot(mu_c, fwhm_m[j,:], 'o', \
-                            color=cols[j], markerfacecolor=cols[j], markersize=10)
-                    ax.errorbar(mu_c, fwhm_m[j,:], yerr=fwhm_se[j,:], \
-                                fmt='none', ecolor=cols[j], elinewidth=2)
-                    ax.plot([mu_min,mu_max], np.array([mu_min,mu_max])*b_f[0,j]+b_f[1,j], '-', \
-                            color=cols[j], label=lab_j)
-            if (sub == '003' and self.ses == 'visual') or (sub == '009' and self.ses == 'audio'):
-                if self.ses == 'visual': y_min =  0; y_max =  20;
-                if self.ses == 'audio':  y_min = 25; y_max = 125;
-                ax.axis([mu_min-d_mu, mu_max+d_mu, y_min, y_max])
-            else:
-                ax.set_xlim(mu_min-d_mu, mu_max+d_mu)
-            ax.legend(loc='upper left', fontsize=16)
-            ax.tick_params(axis='both', labelsize=16)
-            ax.set_xlabel('preferred numerosity', fontsize=16)
-            ax.set_ylabel('FWHM tuning width', fontsize=16)
-            ax.set_title(hdr, fontweight='bold', fontsize=20)
-            
-            # display figure
-            fig.show()
-            return fig
-        
-        # sub-function: plot topography
-        #---------------------------------------------------------------------#
-        def plot_topography(self, sub, cols=['b','r']):
-            
-            # load results
-            filepath = self.res_dir+'sub-adults'+'_ses-'+self.ses+'_space-'+self.space+'_mesh-'+self.mesh+'_'+self.pref
-            verts    = sp.io.loadmat(filepath+'verts.mat')
-            areas    = sp.io.loadmat(filepath+'areas.mat')
-            clusts   = {}
-            
-            # for both hemispheres
-            for j, hemi in enumerate(hemis):
-                
-                # get supra-threshold vertices/triangles
-                verts_sub = verts[sub][hemi][0,0]
-                areas_sub = areas[sub][hemi][0,0]
-                verts_cls = verts_sub[:,1].astype(np.int32)
-                areas_cls = areas_sub[:,1].astype(np.int32)
-                
-                # if supra-threshold vertices exist
-                if verts_sub.shape[0] > 0:
-                    
-                    # preallocate statistics
-                    num_clust = np.max(verts_cls)
-                    XYZ_m     = np.zeros((num_clust,3))
-                    area_s    = np.zeros(num_clust)
-                    Rsq_XYZ   = np.zeros(num_clust)
-                    p_XYZ     = np.zeros(num_clust)
-                    
-                    # go through surface clusters
-                    for k in range(num_clust):
-                        
-                        # calculate cluster center and surface area
-                        XYZ_m[k,:] = np.mean(verts_sub[verts_cls==k+1,6:9], axis=0)
-                        area_s[k]  = np.sum(areas_sub[areas_cls==k+1,6])
-                        
-                        # determine cortical progression of numerosity
-                        try:
-                            y = verts_sub[verts_cls==k+1,2:3]
-                            X = verts_sub[verts_cls==k+1,6:9]
-                            X = X - np.tile(XYZ_m[k,:], (X.shape[0],1))
-                            X = np.c_[X, np.ones((X.shape[0],1))]
-                          # X = np.c_[X, np.power(X,2), np.ones((X.shape[0],1))]
-                            MLL1 = PySPM.GLM(y, X).MLL()
-                            MLL0 = PySPM.GLM(y, X[:,-1:]).MLL()
-                            n, p               = X.shape
-                            Rsq_XYZ[k]         = NumpRF.MLL2Rsq(MLL1, MLL0, n)
-                            h, p_XYZ[k], stats = NumpRF.Rsqtest(y, X @ PySPM.GLM(y,X).OLS(), p=X.shape[1])
-                            del y, X, MLL1, MLL0, n, p, h, stats
-                        except:
-                            print('-> Subject "{}", Cluster "{}-{}": not enough vertices!'. \
-                                  format(sub, hemi, k+1))
-                        
-                    # store hemisphere results
-                    clusts[hemi] = {'center': XYZ_m, 'area': area_s, \
-                                    'Rsq': Rsq_XYZ, 'p': p_XYZ}
-                    
-                    # analyze most significant cluster
-                    try:
-                        k = np.argmax(Rsq_XYZ)
-                        y = verts_sub[verts_cls==k+1,2:3]
-                        X = verts_sub[verts_cls==k+1,6:9]
-                        X = X - np.tile(XYZ_m[k,:], (X.shape[0],1))
-                        X = np.c_[X, np.ones((X.shape[0],1))]
-                      # X = np.c_[X, np.power(X,2), np.ones((X.shape[0],1))]
-                        yp= y - PySPM.GLM(y, X).regress()
-                        r, p, b1, b0         = simplinreg(y[:,0], yp[:,0])
-                        clusts[hemi]['max']  = (k, r, p, b1, b0, X.shape[0])
-                        clusts[hemi]['Ymax'] = np.c_[yp, y]
-                        del y, X, yp, r, p, b1, b0
-                    except:
-                        print('-> Subject "{}", Cluster "{}-{}": could not analyze!'. \
-                              format(sub, hemi, k+1))
-                
-                # if no supra-threshold vertices exist
-                else:
-                    
-                    # store empty dictionary
-                    clusts[hemi] = {}
-            
-            # open figure
-            fig = plt.figure(figsize=(16,9))
-            ax  = fig.add_subplot(111)
-    
-            # plot actual vs. predicted
-            hdr    = 'sub-{}, ses-{}'.format(sub, self.ses)
-            mu_thr = EMPRISE.mu_thr
-            y_min  = mu_thr[0]
-            y_max  = mu_thr[1]
-            for j, hemi in enumerate(hemis):
-                if bool(clusts[hemi]):
-                    if 'max' in clusts[hemi].keys():
-                        k, r, p, b1, b0, n = clusts[hemi]['max']
-                        Y                  = clusts[hemi]['Ymax']
-                        lab_j = 'hemi-'+hemi+', cls-'+str(k+1)+ \
-                                ' (r = {:.2f}, {}, n = {})'.format(r, pvalstr(p), n)
-                        ax.plot(Y[:,0], Y[:,1], 'o', \
-                                color=cols[j], markerfacecolor=cols[j], markersize=3)
-                        ax.plot(mu_thr, np.array(mu_thr)*b1+b0, '-', \
-                                color=cols[j], label=lab_j)
-            y_rng = y_max - y_min
-            ax.axis([y_min-(1/10)*y_rng, y_max+(1/10)*y_rng, \
-                     y_min-(1/10)*y_rng, y_max+(1/10)*y_rng])
-            ax.legend(loc='upper left', fontsize=16)
-            ax.tick_params(axis='both', labelsize=16)
-            ax.set_xlabel('fitted preferred numerosity, based on cortical surface coordinates', fontsize=16)
-            ax.set_ylabel('actual preferred numerosity', fontsize=16)
-            ax.set_title(hdr, fontweight='bold', fontsize=20)
-            
-            # display figure
-            fig.show()
-            return fig
-        
-        # sub-function: plot range vs. map
-        #---------------------------------------------------------------------#
-        def plot_range_vs_map(self, sub, cols=['b','r']):
-            
-            # load results
-            filepath = self.res_dir+'sub-adults'+'_ses-'+self.ses+'_space-'+self.space+'_mesh-'+self.mesh+'_'+self.pref
-            verts    = sp.io.loadmat(filepath+'verts.mat')
-            clusts   = {}
-            
-            # for both hemispheres
-            for j, hemi in enumerate(hemis):
-                
-                # get supra-threshold vertices/triangles
-                verts_sub = verts[sub][hemi][0,0]
-                verts_cls = verts_sub[:,1].astype(np.int32)
-                
-                # if supra-threshold vertices exist
-                if verts_sub.shape[0] > 0:
-                    
-                    # preallocate statistics
-                    num_clust = np.max(verts_cls)
-                    mu_clust  = [[] for k in range(num_clust)]
-                    XYZ_m     = np.zeros((num_clust,3))
-                    
-                    # go through surface clusters
-                    for k in range(num_clust):
-                        
-                        # calculate cluster center
-                        XYZ_m[k,:] = np.mean(verts_sub[verts_cls==k+1,6:9], axis=0)
-                        
-                        # extract preferred numerosities
-                        mu_clust[k] = verts_sub[verts_cls==k+1,2]
-                        
-                    # store hemisphere results
-                    clusts[hemi] = {'center': XYZ_m, 'mu': mu_clust}
-                    
-                # if no supra-threshold vertices exist
-                else:
-                    
-                    # store empty dictionary
-                    clusts[hemi] = {}
-            
-            # open figure
-            fig = plt.figure(figsize=(16,9))
-            ax  = fig.add_subplot(111)
-    
-            # plot mu vs. cluster
-            hdr = 'sub-{}, ses-{}'.format(sub, self.ses)
-            lab = []; c = 0;
-            for j, hemi in enumerate(hemis):
-                if bool(clusts[hemi]):
-                    num_clust = len(clusts[hemi]['mu'])
-                    y  = clusts[hemi]['mu']
-                    x  = range(c,c+num_clust)
-                    c  = c+num_clust
-                    bp = ax.boxplot(y, positions=x, widths=0.6, \
-                                    sym='+k', notch=True, patch_artist=True)
-                    for k in range(len(bp['boxes'])):
-                        bp['boxes'][k].set_facecolor(cols[j])
-                        bp['medians'][k].set_color('k')
-                        lab.append(hemi+str(k+1))
-            ax.axis([(0-1), c, EMPRISE.mu_thr[0]-0.5, EMPRISE.mu_thr[1]+0.5])
-            ax.set_xticks(np.arange(c), labels=lab)
-            ax.legend(loc='upper right', fontsize=16)
-            ax.tick_params(axis='both', labelsize=16)
-            ax.set_xlabel('hemisphere and cluster', fontsize=16)
-            ax.set_ylabel('preferred numerosities', fontsize=16)
-            ax.set_title(hdr, fontweight='bold', fontsize=20)
-            
-            # display figure
-            fig.show()
-            return fig
     
     # if input is '3', extract Figure data
     if Figure == '3':
@@ -1987,22 +1287,19 @@ def WP1_Fig3(Figure):
         sess   = ['visual', 'audio']
         spaces = EMPRISE.spaces
         meshs  = EMPRISE.meshs
-        crit   = EMPRISE.crit_def
-        ctype  = 'coords'       # distance clustering
-        d_mm   = 1.7            # maximum distance to cluster ~ voxel resolution
-        k_min  = 50             # minimum number of vertices in cluster = 50
+        crit   = EMPRISE.crit_def           # "Rsqmb" = R-squared, mu and beta
+        crit   = crit + ',p=0.05B'          # "p=0.05B" = p < 0.05, Bonferroni-corrected
         AFNI   = True           # edge clustering
+        # ctype  = 'coords'     # distance clustering
+        # d_mm   = 1.7          # maximum distance to cluster ~ voxel resolution
+        # k_min  = 50           # minimum number of vertices in cluster = 50
         
         # extract clusters
         for ses in sess:
             for space in spaces:
                 for mesh in meshs:
-                    # if not (space == 'fsaverage' and mesh == 'midthickness'):
                     f3 = Fig3_Obj(res_dir, ses, space, mesh, AFNI)
-                    if AFNI:
-                        f3.extract_surface_clusters(crit)
-                    else:
-                        f3.extract_surface_clusters(crit, ctype, d_mm, k_min)
+                    if AFNI: f3.extract_surface_clusters(crit)
     
     # otherwise, create Figure panels
     else:
@@ -2022,101 +1319,6 @@ def WP1_Fig3(Figure):
                  'audio':  ['orangered',  'darkred']}
         f3    = {'visual': Fig3_Obj(res_dir, 'visual', space, mesh, AFNI), \
                  'audio':  Fig3_Obj(res_dir, 'audio',  space, mesh, AFNI)}
-        
-        # Figure 3A
-        if Figure == '3A':
-        
-            # Figure 3A, Part 1: visual data
-            fig = f3['visual'].plot_area_vs_map(subs_all, cols['visual'])
-            fig.savefig('Figures_WP1/WP1_Figure_3A_ses-visual.png', dpi=150, transparent=True)
-            
-            # Figure 3A, Part 2: audio data
-            fig = f3['audio'].plot_area_vs_map(subs_all, cols['audio'])
-            fig.savefig('Figures_WP1/WP1_Figure_3A_ses-audio.png', dpi=150, transparent=True)
-        
-        # Figure 3B
-        if Figure == '3B':
-        
-            # Figure 3B, Part 1: visual data
-            fig = f3['visual'].plot_area_vs_mu(sub_visual, d_mu, cols['visual'])
-            fig.savefig('Figures_WP1/WP1_Figure_3B_ses-visual.png', dpi=150, transparent=True)
-            
-            # Figure 3B, Part 2: audio data
-            fig = f3['audio'].plot_area_vs_mu(sub_audio, d_mu, cols['audio'])
-            fig.savefig('Figures_WP1/WP1_Figure_3B_ses-audio.png', dpi=150, transparent=True)
-        
-        # Figure 3C
-        if Figure == '3C':
-        
-            # Figure 3C, Part 1: visual data
-            fig = f3['visual'].plot_fwhm_vs_mu(sub_visual, d_mu, cols['visual'])
-            fig.savefig('Figures_WP1/WP1_Figure_3C_ses-visual.png', dpi=150, transparent=True)
-            
-            # Figure 3C, Part 2: audio data
-            fig = f3['audio'].plot_fwhm_vs_mu(sub_audio, d_mu, cols['audio'])
-            fig.savefig('Figures_WP1/WP1_Figure_3C_ses-audio.png', dpi=150, transparent=True)
-        
-        # Figure 3D
-        if Figure == '3D':
-        
-            # Figure 3D, Part 1: visual data
-            fig = f3['visual'].plot_topography(sub_visual, cols['visual'])
-            fig.savefig('Figures_WP1/WP1_Figure_3D_ses-visual.png', dpi=150, transparent=True)
-            
-            # Figure 3D, Part 2: audio data
-            fig = f3['audio'].plot_topography(sub_audio, cols['audio'])
-            fig.savefig('Figures_WP1/WP1_Figure_3D_ses-audio.png', dpi=150, transparent=True)
-        
-        # Figure 3E
-        if Figure == '3E':
-        
-            # Figure 3E, Part 1: visual data
-            fig = f3['visual'].plot_range_vs_map(sub_visual, cols['visual'])
-            fig.savefig('Figures_WP1/WP1_Figure_3E_ses-visual.png', dpi=150, transparent=True)
-            
-            # Figure 3E, Part 2: audio data
-            fig = f3['audio'].plot_range_vs_map(sub_audio, cols['audio'])
-            fig.savefig('Figures_WP1/WP1_Figure_3E_ses-audio.png', dpi=150, transparent=True)
-        
-        # Figure S5
-        if Figure == 'S5':
-        
-            # Figure S5: all subjects, visual & audio
-            for sub in subs_all:
-                for ses in sess:
-                    fig = f3[ses].plot_area_vs_mu(sub, d_mu, cols[ses])
-                    filename = 'Figures_WP1/WP1_Figure_S5'+'_ses-'+ses+'_sub-'+sub+'.png'
-                    fig.savefig(filename, dpi=150, transparent=True)
-        
-        # Figure S6
-        if Figure == 'S6':
-        
-            # Figure S6: all subjects, visual & audio
-            for sub in subs_all:
-                for ses in sess:
-                    fig = f3[ses].plot_fwhm_vs_mu(sub, d_mu, cols[ses])
-                    filename = 'Figures_WP1/WP1_Figure_S6'+'_ses-'+ses+'_sub-'+sub+'.png'
-                    fig.savefig(filename, dpi=150, transparent=True)
-        
-        # Figure S7
-        if Figure == 'S7':
-        
-            # Figure S7: all subjects, visual & audio
-            for sub in subs_all:
-                for ses in sess:
-                    fig = f3[ses].plot_topography(sub, cols[ses])
-                    filename = 'Figures_WP1/WP1_Figure_S7'+'_ses-'+ses+'_sub-'+sub+'.png'
-                    fig.savefig(filename, dpi=150, transparent=True)
-        
-        # Figure S8
-        if Figure == 'S8':
-        
-            # Figure S8: all subjects, visual & audio
-            for sub in subs_all:
-                for ses in sess:
-                    fig = f3[ses].plot_range_vs_map(sub, cols[ses])
-                    filename = 'Figures_WP1/WP1_Figure_S8'+'_ses-'+ses+'_sub-'+sub+'.png'
-                    fig.savefig(filename, dpi=150, transparent=True)
 
 # function: Work Package 1, Figure 4
 #-----------------------------------------------------------------------------#
@@ -2159,6 +1361,19 @@ def WP1_Fig4(Figure):
                         verts_map, areas_map = \
                             filter_clusters(verts_sub, areas_sub, A_min, d_max, nmap, hemi)
                         A[i,k,j] = np.sum(areas_map[:,6])
+            
+            # report existing maps
+            print('\n-> ses-{}:'.format(self.ses))
+            for j, hemi in enumerate(hemis):
+                print('   - hemi-{}:'.format(hemi))
+                for i, sub in enumerate(subs):
+                    print('     - sub-{}: '.format(sub), end='')
+                    for k, nmap in enumerate(nmaps):
+                        if A[i,k,j] != 0:
+                            print('{}, '.format(nmap), end='')
+                    print()
+                if hemi =='R': print()
+            print()
             
             # average surface areas
             A_n    = np.zeros((len(hemis),len(nmaps)))
@@ -2214,12 +1429,17 @@ def WP1_Fig4(Figure):
             mu_max = EMPRISE.mu_thr[1]
             mu_b   = np.arange(mu_min, mu_max+d_mu, d_mu)
             mu_c   = np.arange(mu_min+d_mu/2, mu_max+d_mu/2, d_mu)
+            mu_x   = np.arange(mu_min, mu_max+0.1, 0.1)
             
             # preallocate results
+            pds    = [1,2]      # polynomial degrees
+            pdstr  = ['linear','quadratic']
             area_s = np.zeros((len(hemis),mu_c.size))
+            area_p = np.zeros((len(hemis),mu_x.size,len(pds)))
+            R2_a   = np.zeros((len(hemis),len(pds)))
+            R2p_a  = np.zeros((len(hemis),len(pds)))
             r_a    = np.zeros(len(hemis))
             p_a    = np.zeros(len(hemis))
-            b_a    = np.zeros((2,len(hemis)))
             n_a    = np.zeros(len(hemis), dtype=np.int32)
             
             # for both hemispheres
@@ -2228,14 +1448,12 @@ def WP1_Fig4(Figure):
                 # get supra-threshold vertices/triangles
                 verts_sub = verts[sub][hemi][0,0]
                 areas_sub = areas[sub][hemi][0,0]
-                # verts_sub, areas_sub = \
-                #     filter_clusters(verts_sub, areas_sub, A_min)
                 mu_sub    = areas_sub[:,2]
                 area_sub  = areas_sub[:,6]
                 
                 # if supra-threshold vertices exist
                 if verts_sub.shape[0] > 0:
-                
+                    
                     # go through numerosity bins
                     for k in range(mu_c.size):
                         
@@ -2244,14 +1462,34 @@ def WP1_Fig4(Figure):
                         if np.sum(ind_k) > 0:
                             area_s[j,k] = np.sum(area_sub[ind_k])
                         else:
-                            area_s[j,k] = np.nan
-                    
-                    # calculate regression lines
-                    ind_j  =~np.isnan(area_s[j,:])
+                            area_s[j,k] = 0 # np.nan
+
+                    # extract x and y data
+                    ind_j  = ~np.isnan(area_s[j,:])
                     n_a[j] = np.sum(ind_j)
-                    r_a[j], p_a[j], b_a[0,j], b_a[1,j] = \
-                        simplinreg(area_s[j,ind_j], mu_c[ind_j])
-                    del ind_k, ind_j
+                    y = area_s[j,ind_j]
+                    x = mu_c[ind_j]
+                    r_a[j], p_a[j], b0_a, b1_a = simplinreg(y, x)
+                    y = np.array([y]).T
+                    
+                    # explore polynomial curves
+                    for k, d in enumerate(pds):
+                    
+                        # fit polynomial curve
+                        X = np.zeros((n_a[j],d+1))
+                        for m in range(0,d+1):
+                            X[:,m] = np.power(x, m)
+                        bh = PySPM.GLM(y, X).OLS()
+                        yp = X @ bh
+                        R2_a[j,k]  = NumpRF.yp2Rsq(y, yp)
+                        R2p_a[j,k] = NumpRF.Rsq2pval(R2_a[j,k], n_a[j], p=d+1)
+                        
+                        # predict polynomial curve
+                        X = np.zeros((mu_x.size,d+1))
+                        for m in range(0,d+1):
+                            X[:,m] = np.power(mu_x, m)
+                        area_p[j,:,k] = np.squeeze(X @ bh)
+                        del X, bh, yp
             
             # open figure
             fig = plt.figure(figsize=(16,9))
@@ -2261,17 +1499,19 @@ def WP1_Fig4(Figure):
             hdr = 'sub-{}, ses-{}'.format(sub, self.ses)
             for j, hemi in enumerate(hemis):
                 if np.any(area_s[j,:]):
-                    lab_j = 'hemi-'+hemi+' (r = {:.2f}, {}, n = {})'. \
-                             format(r_a[j], pvalstr(p_a[j]), n_a[j])
                     ax.plot(mu_c, area_s[j,:], 'o', \
                             color=cols[j], markerfacecolor=cols[j], markersize=10)
-                    ax.plot([mu_min,mu_max], np.array([mu_min,mu_max])*b_a[0,j]+b_a[1,j], '-', \
-                            color=cols[j], label=lab_j)
+                    for k, d in enumerate(pds):
+                        if d == 1:
+                            lab_j ='hemi-'+hemi+', fit-'+pdstr[k]+' (r = {:.2f}, {}, n = {})'. \
+                                    format(r_a[j], pvalstr(p_a[j]), n_a[j])
+                        else:
+                            lab_j ='hemi-'+hemi+', fit-'+pdstr[k]+' (R² = {:.2f}, {}, n = {})'. \
+                                    format(R2_a[j,k], pvalstr(R2p_a[j,k]), n_a[j])
+                        ax.plot(mu_x, area_p[j,:,k], '-', \
+                                color=cols[j], alpha=1/d, label=lab_j)
             ax.set_xlim(mu_min-d_mu, mu_max+d_mu)
-            # if (sub == '003' and self.ses == 'visual') or (sub == '009' and self.ses == 'audio'):
-            #     if self.ses == 'visual': y_max = 600
-            #     if self.ses == 'audio':  y_max = 60
-            #     ax.axis([mu_min-d_mu, mu_max+d_mu, 0-(1/20)*y_max, y_max+(1/20)*y_max])
+            ax.set_ylim(-(1/10)*np.nanmax(area_s), +(11/10)*np.nanmax(area_s))
             ax.legend(loc='upper right', fontsize=20)
             ax.tick_params(axis='both', labelsize=20)
             ax.set_xlabel('preferred numerosity', fontsize=28)
@@ -2311,8 +1551,6 @@ def WP1_Fig4(Figure):
                 # get supra-threshold vertices
                 verts_sub = verts[sub][hemi][0,0]
                 areas_sub = areas[sub][hemi][0,0]
-                # verts_sub, areas_sub = \
-                #     filter_clusters(verts_sub, areas_sub, A_min)
                 mu_sub    = verts_sub[:,2]
                 fwhm_sub  = verts_sub[:,3]
                 
@@ -2355,10 +1593,7 @@ def WP1_Fig4(Figure):
                     ax.plot([mu_min,mu_max], np.array([mu_min,mu_max])*b_f[0,j]+b_f[1,j], '-', \
                             color=cols[j], label=lab_j)
             ax.set_xlim(mu_min-d_mu, mu_max+d_mu)
-            # if (sub == '003' and self.ses == 'visual') or (sub == '009' and self.ses == 'audio'):
-            #     if self.ses == 'visual': y_min =  0; y_max =  20;
-            #     if self.ses == 'audio':  y_min = 25; y_max = 125;
-            #     ax.axis([mu_min-d_mu, mu_max+d_mu, y_min, y_max])
+            ax.set_ylim(0, (11/10)*np.nanmax(fwhm_m+fwhm_se))
             ax.legend(loc='upper left', fontsize=20)
             ax.tick_params(axis='both', labelsize=20)
             ax.set_xlabel('preferred numerosity', fontsize=28)
@@ -2418,13 +1653,37 @@ def WP1_Fig4(Figure):
                             e = np.concatenate((np.array([np.mean(e)]), e), axis=0)
                             dist_m = np.sqrt(np.sum(np.power(e, 2)))
                         
-                        # determine cortical progression of numerosity
+                        # retrieve numerosity and surface coordinates
                         y = verts_map[verts_cls==cls_i,2:3]
                         X = verts_map[verts_cls==cls_i,6:9]
-                        X = X - np.tile(XYZ_m, (X.shape[0],1))
+                        X0= X - np.tile(XYZ_m, (X.shape[0],1))
+                        X = np.zeros((X.shape[0],0))
+                        d = 5 # degree of polynomial expansion
+                        for m in range(1,d+1):
+                            X = np.c_[X, np.power(X0,m)]
                         X = np.c_[X, np.ones((X.shape[0],1))]
-                      # X = np.c_[X, np.power(X,2), np.ones((X.shape[0],1))]
-                        yp= y - PySPM.GLM(y, X).regress()
+                        
+                        # prepare cross-validation matrix
+                        n  = X.shape[0]
+                        k  = 10 # number of cross-validation folds
+                        CV = np.zeros((n,k))
+                        nf = np.ceil(n/k)
+                        ia = np.arange(0,n)
+                        for g in range(k):
+                            i2 = np.arange(g*nf, np.min([(g+1)*nf, n]), dtype=int)
+                            i1 = [i for i in ia if i not in i2]
+                            CV[i1,g] = 1
+                            CV[i2,g] = 2
+                        
+                        # cross-validated linear regression
+                        yp = np.zeros(y.shape)
+                        for g in range(k):
+                            i1 = np.nonzero(CV[:,g]==1)
+                            i2 = np.nonzero(CV[:,g]==2)
+                            i1 = np.array(i1[0], dtype=int)
+                            i2 = np.array(i2[0], dtype=int)
+                            b_hat    = PySPM.GLM(y[i1,:], X[i1,:]).OLS()
+                            yp[i2,:] = X[i2,:] @ b_hat
                         Y = np.c_[y, yp]
                         del y, X, yp
                         
@@ -2442,7 +1701,7 @@ def WP1_Fig4(Figure):
                     # if other maps use the same cluster
                     if cls1['cluster'] in [clusts[nmap2]['cluster'] for nmap2 in clusts.keys() if nmap2 != nmap1]:
                         dists = [clusts[nmap2]['distance'] for nmap2 in clusts.keys()
-                                 if clusts[nmap2]['cluster'] == cls1['cluster']]
+                                  if clusts[nmap2]['cluster'] == cls1['cluster']]
                         
                         # if cluster does not have the minimum distance
                         if cls1['distance'] != np.min(dists):
@@ -2457,23 +1716,26 @@ def WP1_Fig4(Figure):
             mu_thr = EMPRISE.mu_thr
             y_min  = mu_thr[0]
             y_max  = mu_thr[1]
+            legend = False
             for k, nmap in enumerate(nmaps):
                 if nmap in clusts.keys():
                     if not clusts[nmap]['removed']:
                         Y = clusts[nmap]['Y']
                         r, p, b1, b0 = simplinreg(Y[:,1], Y[:,0])
-                        lab_k = 'hemi-'+hemi+', map-'+nmap+' (r = {:.2f}, {}, n = {})'.format(r, pvalstr(p), Y.shape[0])
+                        MAE          = np.mean(np.abs(Y[:,1]-Y[:,0]))
+                        lab_k  = 'hemi-'+hemi+', map-'+nmap+' (cv-r = {:.2f}, MAE = {:.2f}, n = {})'.format(r, MAE, Y.shape[0])
+                        legend = True
                         ax.plot(Y[:,0], Y[:,1], 'o', \
-                                    color=cols[k], markerfacecolor=cols[k], markersize=3)
+                                color=cols[k], markerfacecolor=cols[k], markersize=3)
                         ax.plot(mu_thr, np.array(mu_thr)*b1+b0, '-', \
-                                    color=cols[k], label=lab_k)
+                                color=cols[k], label=lab_k)
             y_rng = y_max - y_min
             ax.axis([y_min-(1/10)*y_rng, y_max+(1/10)*y_rng, \
-                         y_min-(1/10)*y_rng, y_max+(1/10)*y_rng])
-            ax.legend(loc='upper left', fontsize=20)
+                     y_min-(1/10)*y_rng, y_max+(1/10)*y_rng])
+            if legend: ax.legend(loc='upper left', fontsize=20)
             ax.tick_params(axis='both', labelsize=20)
             ax.set_xlabel('actual preferred numerosity', fontsize=28)
-            ax.set_ylabel('fitted preferred numerosity', fontsize=28)
+            ax.set_ylabel('predicted preferred numerosity', fontsize=28)
             ax.set_title('', fontweight='bold', fontsize=28)
             
             # display figure
@@ -2532,11 +1794,11 @@ def WP1_Fig4(Figure):
                                 e = np.concatenate((np.array([np.mean(e)]), e), axis=0)
                                 dist_m = np.sqrt(np.sum(np.power(e, 2)))
                             del c, e
-                            
+                    
                             # store numerosity map
                             clusts[hemi][nmap] = \
                                 {'cluster': cls_i, 'distance': dist_m, \
-                                 'center': XYZ_m, 'mu': mu_clust, 'removed': False}
+                                 'center': XYZ_m, 'mu': mu_clust, 'other': ''}
                             del cls_i, dist_m, XYZ_m, mu_clust
                 
                 # for all maps
@@ -2548,10 +1810,12 @@ def WP1_Fig4(Figure):
                         if cls1['cluster'] in [clusts[hemi][nmap2]['cluster'] for nmap2 in clusts[hemi].keys() if nmap2 != nmap1]:
                             dists = [clusts[hemi][nmap2]['distance'] for nmap2 in clusts[hemi].keys()
                                      if clusts[hemi][nmap2]['cluster'] == cls1['cluster']]
+                            dmaps = [nmap2 for nmap2 in clusts[hemi].keys()
+                                     if clusts[hemi][nmap2]['cluster'] == cls1['cluster']]
                             
                             # if cluster does not have the minimum distance
                             if cls1['distance'] != np.min(dists):
-                                clusts[hemi][nmap1]['removed'] = True
+                                clusts[hemi][nmap1]['other'] = dmaps[np.argmin(dists)]
             
             # open figure
             fig = plt.figure(figsize=(16,9))
@@ -2564,16 +1828,19 @@ def WP1_Fig4(Figure):
                 for k, nmap in enumerate(nmaps):
                     c = c + 1
                     if nmap in clusts[hemi].keys():
-                        if not clusts[hemi][nmap]['removed']:
+                        if not clusts[hemi][nmap]['other']:
                             y  = clusts[hemi][nmap]['mu']
                             bp = ax.boxplot(y, positions=[c], widths=0.6, \
                                             sym='+k', notch=True, patch_artist=True)
                             bp['boxes'][0].set_facecolor(cols[j])
                             bp['medians'][0].set_color('k')
+                        else:
+                            ax.text(c, 1.5, 'same as '+hemi+'-'+clusts[hemi][nmap]['other'],
+                                    fontsize=20, rotation=90, rotation_mode='default',
+                                    horizontalalignment='center', verticalalignment='bottom')
                     lab.append(hemi+'-'+nmap)
             ax.axis([(1-0.5), (c+0.5), EMPRISE.mu_thr[0]-0.5, EMPRISE.mu_thr[1]+0.5])
             ax.set_xticks(np.arange(1,c+1), labels=lab)
-            ax.legend(loc='upper right', fontsize=20)
             ax.tick_params(axis='both', labelsize=20)
             ax.set_xlabel('hemisphere and cluster', fontsize=28)
             ax.set_ylabel('preferred numerosities', fontsize=28)
@@ -2604,7 +1871,7 @@ def WP1_Fig4(Figure):
         # specify visualization
         d_mu  = 0.5
         A_min = {'visual': 50, 'audio': 25}
-        d_max = {'visual': 17, 'audio': 17}
+        d_max = {'visual': 25, 'audio': 50}
         cols  = {'visual': ['dodgerblue', 'darkblue'], \
                  'audio':  ['orangered',  'darkred']}
         f4    = {'visual': {'fsnative':  Fig4_Obj(res_dir, 'visual', 'fsnative',  mesh, AFNI), \
@@ -2653,7 +1920,7 @@ def WP1_Fig4(Figure):
             fig.savefig('Figures_WP1/WP1_Figure_4D_ses-visual.png', dpi=150, transparent=True)
             
             # Figure 4D, Part 2: audio data
-            fig = f4['audio']['fsaverage'].plot_topography(sub_audio, 'L', A_min['audio'], d_max['audio'])
+            fig = f4['audio']['fsaverage'].plot_topography(sub_audio, 'R', A_min['audio'], d_max['audio'])
             fig.savefig('Figures_WP1/WP1_Figure_4D_ses-audio.png', dpi=150, transparent=True)
         
         # Figure 4E
@@ -2710,6 +1977,267 @@ def WP1_Fig4(Figure):
                     filename = 'Figures_WP1/WP1_Figure_S8'+'_ses-'+ses+'_sub-'+sub+'.png'
                     fig.savefig(filename, dpi=150, transparent=True)
 
+# function: Work Package 1, Figure 5
+#-----------------------------------------------------------------------------#
+def WP1_Fig5(Step):
+    
+    # define analyses
+    subs  = EMPRISE.adults
+    sess  =['visual', 'audio']
+    space = 'fsaverage'
+    model = 'False_iid'
+    
+    # step 1: single-subject GLM analyses
+    #-------------------------------------------------------------------------#
+    if Step == 1:
+
+        # define contrasts
+        cons = [{'type': 'F', 'c': np.array([[1/5, 1/5, 1/5, 1/5, 1/5, -1]]).T},  \
+                {'type': 't', 'c': np.array([+1/5, +1/5, +1/5, +1/5, +1/5, -1])}, \
+                {'type': 't', 'c': np.array([-1/5, -1/5, -1/5, -1/5, -1/5, +1])}]
+        
+        # perform GLM analyses
+        for sub in subs:
+            for ses in sess:
+                mod = EMPRISE.Model(sub, ses, model, space)
+                mod.run_GLM_analysis(False, 'iid', cons)
+    
+    # step 2: group-level GLM analyses
+    #-------------------------------------------------------------------------#
+    if Step == 2:
+    
+        # specify model
+        ana = 'False_iid_con_0002'
+        y   = 'con_0002.surf.gii'
+        X   = np.ones((len(subs),1))
+        
+        # define contrasts
+        cons = [{'type': 'F', 'c': np.array([[1]])}, \
+                {'type': 't', 'c': np.array([+1])},  \
+                {'type': 't', 'c': np.array([-1])}]
+    
+        # perform GLM analyses
+        for ses in sess:
+            grp = EMPRISE.Group('all', ses, model, ana, subs)
+            grp.run_GLM_analysis_group(y, X, cons)
+
+    # step 3: threshold statistical maps
+    #-------------------------------------------------------------------------#
+    if Step == 3:
+    
+        # define inference
+        ana   =   'False_iid_con_0002'
+        cons  = [{'type': 'F', 'c': np.array([[1]])}, \
+                 {'type': 't', 'c': np.array([+1])},  \
+                 {'type': 't', 'c': np.array([-1])}]
+        labs  = [ '1-5_neq_20', '1-5_gr_20', '20_gr_1-5' ]
+        alpha = 0.001
+        
+        # threshold SPMs
+        for ses in sess:
+            grp = EMPRISE.Group('all', ses, model, ana, subs)
+            for k in range(1,len(cons)):
+                fig = grp.threshold_SPM(k+1, alpha)
+                filename = 'Figures_WP1/WP1_Figure_S10'+'_ses-'+ses+'_con-'+labs[k]+'.png'
+                fig.savefig(filename, dpi=150, transparent=True)
+
+# function: Work Package 1, Figure 6
+#-----------------------------------------------------------------------------#
+def WP1_Fig6(Figure):
+    
+    # define numerosity signals
+    mus   = [2, 4]
+    fwhms = [5, 10, 20, 40, 80]
+    
+    # define numerosity experiment
+    ons, dur, stim = EMPRISE.Session('001', 'visual').get_onsets()
+    ons, dur, stim = EMPRISE.onsets_trials2blocks(ons, dur, stim, 'closed')
+    ons, dur, stim = EMPRISE.correct_onsets(ons[0], dur[0], stim[0])
+    
+    # open figure
+    fig = plt.figure(figsize=(27,27))
+    axs = fig.subplots(len(fwhms), len(mus))
+    
+    # simulate signals
+    for k, mu in enumerate(mus):
+        for j, fwhm in enumerate(fwhms):
+            
+            # create hemodynamic signals
+            mu_log, sig_log = NumpRF.lin2log(mu, fwhm)
+            # mu_lin, sig_lin = (mu, NumpRF.fwhm2sig(fwhm))
+            Z, t = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr, np.array([mu_log]), np.array([sig_log]), lin=False)
+            # Z, t = NumpRF.neuronal_signals(ons, dur, stim, EMPRISE.TR, EMPRISE.mtr, np.array([mu_lin]), np.array([sig_lin]), lin=True)
+            S, t = NumpRF.hemodynamic_signals(Z, t, EMPRISE.scans_per_epoch, EMPRISE.mtr, EMPRISE.mto, p=None, order=1)
+            y    = S[:,:,0]
+            
+            # prepare axis limits
+            y_min = np.min(y)
+            y_max = np.max(y)
+            y_rng = y_max-y_min
+            t_max = np.max(t)
+            
+            # plot hemodynamic signals
+            axs[j,k].plot(t, y, '-b', linewidth=2, label='expected hemodynamic signal')
+            for i in range(len(ons)):
+                axs[j,k].plot(np.array([ons[i],ons[i]]), \
+                              np.array([y_max+(1/20)*y_rng, y_max+(3/20)*y_rng]), '-k')
+                axs[j,k].text(ons[i]+(1/2)*dur[i], y_max+(2/20)*y_rng, str(stim[i]), fontsize=18,
+                              horizontalalignment='center', verticalalignment='center')
+            axs[j,k].plot(np.array([ons[-1]+dur[-1],ons[-1]+dur[-1]]), \
+                          np.array([y_max+(1/20)*y_rng, y_max+(3/20)*y_rng]), '-k')
+            axs[j,k].plot(np.array([ons[0],ons[-1]+dur[-1]]), \
+                          np.array([y_max+(1/20)*y_rng, y_max+(1/20)*y_rng]), '-k')
+            axs[j,k].axis([0, t_max, y_min-(1/20)*y_rng, y_max+(3/20)*y_rng])
+            if j == 2 and k == 1:
+                axs[j,k].legend(loc='lower right', fontsize=27)
+            if j == len(fwhms)-1:
+                axs[j,k].set_xlabel('within-cycle time [s]', fontsize=27)
+            if k == 0:
+                axs[j,k].set_ylabel('fwhm = {:.0f}'.format(fwhm), fontsize=36)
+            if j == 0:
+                axs[j,k].set_title('mu = {:.0f}'.format(mu), fontsize=36)
+            axs[j,k].tick_params(axis='both', labelsize=18)
+    
+    # Figure S11
+    if Figure == 'S11':
+        
+        # hemodynamic signals for different mu and fwhm
+        filename = 'Figures_WP1/WP1_Figure_S11'+'_ses-'+'both'+'.png'
+        fig.savefig(filename, dpi=150, transparent=True)
+
+# function: Work Package 1, Figure 7
+#-----------------------------------------------------------------------------#
+def WP1_Fig7(Figure):
+    
+    # Figures:
+    # - Harvey et al. (2013), Fig. S5
+    # - Harvey et al. (2015), Fig. 1E
+    
+    # specify analyses
+    subs   = EMPRISE.adults
+    sess   =['visual', 'audio']
+    models ={'log': 'True_False_iid_1_V2_new', 
+             'lin': 'True_False_iid_1_V2-lin_new'}
+    space  = 'fsnative'
+    cols   ={'visual': 'dodgerblue', 'audio': 'orangered'}
+    select = 'loglin'
+    cv     = True
+    Rsq    = 0.2                # R² > 0.2
+    alpha  = 0.05               # p < 0.05
+    meth   = 'B'                # Bonferroni
+    
+    # analyze sessions
+    f7 = {}
+    for ses in sess:
+        
+        # analyze hemispheres
+        f7[ses] = {}
+        for hemi in hemis:
+            
+            # open figure
+            fig = plt.figure(figsize=(12,9))
+            ax  = fig.add_subplot(111)
+            
+            # analyze subjects
+            Res = {}
+            for sub in subs:
+                
+                # analyze models
+                Res[sub] = {}
+                for fct in models.keys():
+                    
+                    # load model
+                    mod = EMPRISE.Model(sub, ses, models[fct], space)
+                    res_file = mod.get_results_file(hemi)
+                    filepath = res_file[:res_file.find('numprf.mat')]
+                    mu_map   = filepath + 'mu.surf.gii'
+                    NpRF     = sp.io.loadmat(res_file)
+                    mask     = nib.load(mu_map).darrays[0].data != 0
+                    
+                    # load parameter estimates
+                    mu   = np.squeeze(NpRF['mu_est'])
+                    fwhm = np.squeeze(NpRF['fwhm_est'])
+                    beta = np.squeeze(NpRF['beta_est'])
+                    n    = np.prod(mod.calc_runs_scans())# effective number of observations in model
+                    p    = [4,2][int(cv)]                # number of explanatory variables used for R^2
+                    
+                    # load (cross-validated) R-squared
+                    Res[sub][fct] = {}
+                    if cv:
+                        Rsq_map = filepath + 'cvRsq.surf.gii'
+                        cvRsq   = nib.load(Rsq_map).darrays[0].data
+                        Res[sub][fct]['Rsq'] = cvRsq[mask]
+                    else:
+                        MLL1 = np.squeeze(NpRF['MLL_est'])
+                        MLL0 = np.squeeze(NpRF['MLL_const'])
+                        Res[sub][fct]['Rsq'] = NumpRF.MLL2Rsq(MLL1, MLL0, n)
+                    
+                    # select vertices
+                    ind = NumpRF.Rsqsig(Res[sub][fct]['Rsq'], n, p, alpha, meth)
+                    # alternatively: ind = Res[sub][fct]['Rsq'] > Rsq
+                    ind = np.logical_and(ind, np.logical_and(mu   >= EMPRISE.mu_thr[0],
+                                                             mu   <= EMPRISE.mu_thr[1]))
+                    ind = np.logical_and(ind, np.logical_and(beta >= EMPRISE.beta_thr[0],
+                                                             beta <= EMPRISE.beta_thr[1]))
+                    Res[sub][fct]['ind'] = ind
+                    del mu, fwhm, beta, ind
+                
+                # compare R-squared
+                if select == 'loglin':
+                    ind_both = np.logical_and(Res[sub]['log']['ind'],
+                                               Res[sub]['lin']['ind'])
+                    Res[sub][select] = {}
+                elif select == 'log':
+                    ind_both = Res[sub]['log']['ind']
+                elif select == 'lin':
+                    ind_both = Res[sub]['lin']['ind']
+                print(np.sum(ind_both))
+                delta_Rsq    = Res[sub]['log']['Rsq'] - Res['lin']['Rsq']
+                delta_Rsq    = delta_Rsq[ind_both]
+                Res[sub][select]['dRsq'] = delta_Rsq
+            
+            # collect delta R-squared
+            delta_Rsq = np.array([])
+            for sub in subs:
+                delta_Rsq = np.concatenate((delta_Rsq, Res[sub][select]['dRsq']))
+            log_better    = np.sum(delta_Rsq>0)/delta_Rsq.size
+            
+            # prepare histogram
+            d_Rsq        = 0.01
+            x_Rsq        = np.arange(-1, +1+d_Rsq, d_Rsq)
+            n_Rsq, x_Rsq = np.histogram(delta_Rsq, x_Rsq)
+            x_Rsq        = x_Rsq[:-1] + d_Rsq/2
+            
+            # plot histogram
+            hdr   = 'ses-{}, hemi-{}'.format(ses, hemi)
+            x_max = 0.1
+            n_max = np.max(n_Rsq)
+            ax.bar(x_Rsq, n_Rsq, width=(3/4)*d_Rsq, color=cols[ses])
+            ax.plot([0,0], [0,(11/10)*n_max], '-k', linewidth=1)
+            ax.axis([-x_max, +x_max, 0, (21/20)*n_max])
+            ax.tick_params(axis='both', labelsize=18)
+            ax.set_xlabel('log cvR² minus lin cvR²', fontsize=32)
+            ax.set_ylabel('number of vertices', fontsize=32)
+            ax.set_title('', fontweight='bold', fontsize=32)
+            ax.text((9/10)*x_max, (9/10)*n_max,
+                    'log better:\n{:.2f}%'.format(log_better*100),
+                    fontsize=18, horizontalalignment='right', verticalalignment='center')
+            ax.text(-(9/10)*x_max, (9/10)*n_max,
+                    'linear better:\n{:.2f}%'.format(100-log_better*100),
+                    fontsize=18, horizontalalignment='left', verticalalignment='center')
+            f7[ses][hemi] = fig
+
+    # Figure S12
+    if Figure == 'S12':
+        
+        # Figure S12: all sessions, all hemispheres
+        for ses in sess:
+            for hemi in hemis:
+                # delta R-squared between logarithmic and linear
+                fig = f7[ses][hemi]
+                filename = 'Figures_WP1/WP1_Figure_S12'+'_ses-'+ses+'_hemi-'+hemi+'_select-'+select+'.png'
+                fig.savefig(filename, dpi=150, transparent=True)
+
 # function: Work Package 1, Analysis 1
 #-----------------------------------------------------------------------------#
 def WP1_Ana1():
@@ -2722,7 +2250,7 @@ def WP1_Ana1():
     cols  =['yellow', 'gold', 'orange', 'red', 'deeppink', 'purple', \
             'lime', 'darkgreen', 'cyan', 'blue', 'grey', 'sienna']
     A_min ={'visual': 50, 'audio': 25}
-    d_max ={'visual': 17, 'audio': 17}
+    d_max ={'visual': 51, 'audio': 51}
     
     # analyze sessions
     for ses in sess:
@@ -2821,163 +2349,144 @@ def WP1_Ana1():
             # save figure
             filename = 'Figures_WP1/WP1_Analysis_1'+'_ses-'+ses+'_space-'+space+'_mesh-'+mesh+'.png'
             fig.savefig(filename, dpi=150)
-            
+
 # function: Work Package 1, Analysis 2
 #-----------------------------------------------------------------------------#
 def WP1_Ana2():
     
+    # Figures:
+    # - Harvey et al. (2013), Fig. S5
+    # - Harvey et al. (2015), Fig. 1E
+    
     # specify analyses
-    subs  = EMPRISE.adults
-    sess  =['visual', 'audio']
-    model = model_def
-    hemis ={'L': 'left', 'R': 'right'}
-    space = 'fsaverage'
-    para  = 'Rsq'
+    subs   = EMPRISE.adults
+    sess   =['visual', 'audio']
+    models ={'log': 'True_False_iid_1_V2_new', 
+             'lin': 'True_False_iid_1_V2-lin_new'}
+    space  = 'fsnative'
+    cols   ={'visual': 'dodgerblue', 'audio': 'orangered'}
+    select = 'loglin'
+    cv     = True
+    Rsq    = 0.2                # R² > 0.2
+    alpha  = 0.001              # p < 0.001
+    meth   = ''                 # uncorrected
     
-    # specify thresholds
-    Rsq_thr  = 0.2
-    mu_thr   = EMPRISE.mu_thr
-    fwhm_thr = EMPRISE.fwhm_thr
-    beta_thr = EMPRISE.beta_thr
-    crit     = 'Rsqmb,'+str(Rsq_thr)
-    
-    # prepare loading
-    N     = len(subs)
-    S     = len(sess)
-    maps  = [[{} for j in range(S)] for i in range(N)]
-    para  = 'Rsq'
-    
-    # load all subjects
-    for i, sub in enumerate(subs):
+    # analyze sessions
+    for ses in sess:
         
-        # load all sessions
-        for j, ses in enumerate(sess):
+        # analyze hemispheres
+        for hemi in hemis:
             
-            # load analysis details
-            mod = EMPRISE.Model(sub, ses, model, space)
-            n   = np.prod(mod.calc_runs_scans())# effective number of
-                                                # observations in model
-            # analyze hemispheres
-            for hemi in hemis.keys():
+            # open figure
+            fig = plt.figure(figsize=(16,9))
+            axs = fig.subplots(3,4)
+            
+            # analyze subjects
+            for i, sub in enumerate(subs):
                 
-                # load numerosity map
-                res_file = mod.get_results_file(hemi)
-                filepath = res_file[:res_file.find('numprf.mat')]
-                mu_map   = filepath + 'mu.surf.gii'
-                NpRF     = sp.io.loadmat(res_file)
-                image    = nib.load(mu_map)
-                mask     = image.darrays[0].data != 0
+                # analyze models
+                Res = {}
+                for fct in models.keys():
+                    
+                    # load model
+                    mod = EMPRISE.Model(sub, ses, models[fct], space)
+                    res_file = mod.get_results_file(hemi)
+                    filepath = res_file[:res_file.find('numprf.mat')]
+                    mu_map   = filepath + 'mu.surf.gii'
+                    NpRF     = sp.io.loadmat(res_file)
+                    mask     = nib.load(mu_map).darrays[0].data != 0
+                    
+                    # load parameter estimates
+                    mu   = np.squeeze(NpRF['mu_est'])
+                    fwhm = np.squeeze(NpRF['fwhm_est'])
+                    beta = np.squeeze(NpRF['beta_est'])
+                    n    = np.prod(mod.calc_runs_scans())# effective number of observations in model
+                    p    = [4,2][int(cv)]                # number of explanatory variables used for R^2
+                    
+                    # load (cross-validated) R-squared
+                    Res[fct] = {}
+                    if cv:
+                        Rsq_map = filepath + 'cvRsq.surf.gii'
+                        cvRsq   = nib.load(Rsq_map).darrays[0].data
+                        Res[fct]['Rsq'] = cvRsq[mask]
+                    else:
+                        MLL1 = np.squeeze(NpRF['MLL_est'])
+                        MLL0 = np.squeeze(NpRF['MLL_const'])
+                        Res[fct]['Rsq'] = NumpRF.MLL2Rsq(MLL1, MLL0, n)
+                    
+                    # select vertices
+                    ind = NumpRF.Rsqsig(Res[fct]['Rsq'], n, p, alpha, meth)
+                    # alternatively: ind = Res[fct]['Rsq'] > Rsq
+                    ind = np.logical_and(ind, np.logical_and(mu   >= EMPRISE.mu_thr[0],
+                                                             mu   <= EMPRISE.mu_thr[1]))
+                    ind = np.logical_and(ind, np.logical_and(beta >= EMPRISE.beta_thr[0],
+                                                             beta <= EMPRISE.beta_thr[1]))
+                    Res[fct]['ind'] = ind
+                    del mu, fwhm, beta, ind
                 
-                # load estimation results
-                mu   = np.squeeze(NpRF['mu_est'])
-                fwhm = np.squeeze(NpRF['fwhm_est'])
-                beta = np.squeeze(NpRF['beta_est'])
-                MLL1 = np.squeeze(NpRF['MLL_est'])
-                MLL0 = np.squeeze(NpRF['MLL_const'])
+                # compare R-squared
+                if select == 'loglin':
+                    ind_both  = np.logical_and(Res['log']['ind'], Res['lin']['ind'])
+                elif select == 'log':
+                    ind_both  = Res['log']['ind']
+                elif select == 'lin':
+                    ind_both  = Res['lin']['ind']
+                print(np.sum(ind_both))
+                delta_Rsq  = Res['log']['Rsq'] - Res['lin']['Rsq']
+                delta_Rsq  = delta_Rsq[ind_both]
+                log_better = np.sum(delta_Rsq>0)/delta_Rsq.size
                 
-                # compute quantities for thresholding
-                Rsq   = NumpRF.MLL2Rsq(MLL1, MLL0, n)
-                ind_m = np.logical_or(mu<mu_thr[0], mu>mu_thr[1])
-                ind_f = np.logical_or(fwhm<fwhm_thr[0], fwhm>fwhm_thr[1])
-                ind_b = np.logical_or(beta<beta_thr[0], beta>beta_thr[1])
+                # prepare histogram
+                d_Rsq        = 0.01
+                x_Rsq        = np.arange(-1, +1+d_Rsq, d_Rsq)
+                n_Rsq, x_Rsq = np.histogram(delta_Rsq, x_Rsq)
+                x_Rsq        = x_Rsq[:-1] + d_Rsq/2
                 
-                # apply conditions for exclusion
-                ind = mu > np.inf
-                if 'Rsq' in crit:
-                    ind = np.logical_or(ind, Rsq<Rsq_thr)
-                if 'm' in crit:
-                    ind = np.logical_or(ind, ind_m)
-                if 'f' in crit:
-                    ind = np.logical_or(ind, ind_f)
-                if 'b' in crit:
-                    ind = np.logical_or(ind, ind_b)
-                
-                # threshold R-squared map
-                para_est       = {'mu': mu, 'fwhm': fwhm, 'beta': beta, 'Rsq': Rsq}
-                para_map       = np.nan * np.ones(mask.size, dtype=np.float32)
-                para_crit      = para_est[para]
-                para_crit[ind] = np.nan
-                para_map[mask] = para_crit
-                maps[i][j][hemis[hemi]] = para_map
-                del para_crit, para_map, para_est
-        
-    # specify target directory
-    mod      = EMPRISE.Model('all', 'both', model, space)
-    targ_dir = mod.get_model_dir()
-    if not os.path.isdir(targ_dir): os.makedirs(targ_dir)
-    
-    # calculate participant count maps
-    cnt_maps = {}
-    for hemi in hemis.keys():
-        Y = np.array([(y[0][hemis[hemi]] * y[1][hemis[hemi]]) \
-                      for y in maps])
-        C = np.sum(~np.isnan(Y), axis=0).astype(np.int32)
-        res_file = mod.get_results_file(hemi)
-        filepath = res_file[:res_file.find('numprf.mat')]
-        filename = filepath + 'cnt' + '_thr-' + crit + '.surf.gii'
-        cnt_img  = EMPRISE.save_surf(C, image, filename)
-        cnt_maps[hemis[hemi]] = filename
-        del Y, C, res_file, filepath, filename
-    
-    # specify plotting
-    caxis  = [1,N]
-    cmap   = 'gist_rainbow'
-    clabel = 'participant count'
-    cbar   ={'n_ticks': N, 'decimals': 0, 'fontsize': 24}
-    
-    # specify mesh files
-    mesh_files = mod.get_mesh_files(space)
-    sulc_files = mod.get_sulc_files(space)
-    
-    # load surface images
-    surf_imgs = {}
-    sulc_data = {}
-    for hemi in cnt_maps.keys():
-        surf_imgs[hemi] = surface.load_surf_data(cnt_maps[hemi])
-        sulc_data[hemi] = surface.load_surf_data(sulc_files[hemi])
-        sulc_data[hemi] = np.where(sulc_data[hemi]>0.0, 0.6, 0.2)
-    
-    # specify surface plot
-    plot = Plot(mesh_files['left'], mesh_files['right'],
-                layout='row', views='lateral', size=(1600,600), zoom=1.5)
-    plot.add_layer(sulc_data, color_range=(0,1),
-                   cmap='Greys', cbar=False)
-    plot.add_layer(surf_imgs, color_range=(caxis[0],caxis[1]),
-                   cmap=cmap, cbar_label=clabel)
-    
-    # display surface plot
-    fig = plot.build(colorbar=True, cbar_kws=cbar)
-    fig.tight_layout()
-    
-    # save figure
-    filename = 'Figures_WP1/WP1_Analysis_2'+'_ses-'+'audiovisual'+'.png'
-    fig.savefig(filename, dpi=150, transparent=True)
+                # plot histogram
+                j1    = i // 4
+                j2    = i %  4
+                hdr   = 'ses-{}, hemi-{}: sub-{}'.format(ses, hemi, sub)
+                x_max = 0.1
+                n_max = np.max(n_Rsq)
+                axs[j1,j2].bar(x_Rsq, n_Rsq, width=(3/4)*d_Rsq, color=cols[ses])
+                axs[j1,j2].plot([0,0], [0,(11/10)*n_max], '-k', linewidth=1)
+                axs[j1,j2].axis([-x_max, +x_max, 0, (21/20)*n_max])
+                axs[j1,j2].tick_params(axis='both', labelsize=10)
+                if j1 == 2:
+                    axs[j1,j2].set_xlabel('log cvR² minus lin cvR²', fontsize=12)
+                if j2 == 0:
+                    axs[j1,j2].set_ylabel('number of vertices', fontsize=12)
+                if i == 0:
+                    axs[j1,j2].set_title(hdr, fontweight='bold', fontsize=12)
+                else:
+                    axs[j1,j2].set_title('sub-{}'.format(sub), fontweight='bold', fontsize=12)
+                axs[j1,j2].text((9/10)*x_max, (9/10)*n_max,
+                                'log better:\n{:.2f}%'.format(log_better*100),
+                                fontsize=10, horizontalalignment='right', verticalalignment='center')
+                axs[j1,j2].text(-(9/10)*x_max, (9/10)*n_max,
+                                'linear better:\n{:.2f}%'.format(100-log_better*100),
+                                fontsize=10, horizontalalignment='left', verticalalignment='center')
+            
+            # save figure
+            filename = 'Figures_WP1/WP1_Analysis_2'+'_ses-'+ses+'_hemi-'+hemi+'_select-'+select+'.png'
+            fig.savefig(filename, dpi=150)
 
 # test area / debugging section
 #-----------------------------------------------------------------------------#
 if __name__ == '__main__':
     
     # select Figures
-    Figures = ['S1', 'S2']
+    Figures = ['S12']
     
     # available Figures
     # Figures = ['1', '2A', '2B', '2C', '2Bp', \
-    #            '3', '3A', '3B', '3C', '3D', '3E', \
-    #            '4', '4A', '4B', '4C', '4D', '4E', \
-    #            'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', \
-    #            'T0', 'T1', 'T2', 'A1', 'A2']
+    #            '3', '4',  '4A', '4B', '4C', '4D', '4E', '5', \
+    #            'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', \
+    #            'T1', 'T2', 'A1', 'A2']
     
     # create Figures
     for Figure in Figures:
     
-        # create talk Figures
-        if Figure == 'Talk':
-            Talk_Figs()    
-        
-        # create Table 0
-        if Figure == 'T0':
-            WP1_Tab0()
-        
         # create Table 2
         if Figure == 'T1':
             WP1_Tab1()
@@ -2987,7 +2496,7 @@ if __name__ == '__main__':
             WP1_Tab2()
         
         # create Figure 1
-        if Figure == '1' or Figure in ['S1','S2']:
+        if Figure == '1' or Figure in ['S1','S2','S9']:
             WP1_Fig1(Figure)
         
         # create Figure 2
@@ -3002,10 +2511,25 @@ if __name__ == '__main__':
         if Figure.startswith('4') or Figure in ['S5','S6','S7','S8']:
             WP1_Fig4(Figure)
         
+        # create Figure 5
+        if Figure == '5':
+            WP1_Fig5(1)
+            WP1_Fig5(2)
+        if Figure == 'S10':
+            WP1_Fig5(3)
+        
+        # create Figure 6
+        if Figure == '6' or Figure == 'S11':
+            WP1_Fig6(Figure)
+        
+        # create Figure 7
+        if Figure == '7' or Figure == 'S12':
+            WP1_Fig7(Figure)
+        
         # run Analysis 1
         if Figure == 'A1':
             WP1_Ana1()
         
-        # run Analysis 1
+        # run Analysis 2
         if Figure == 'A2':
             WP1_Ana2()
