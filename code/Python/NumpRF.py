@@ -37,6 +37,8 @@ Joram Soch, MPI Leipzig <soch@cbs.mpg.de>
 2024-06-25, 15:03: Rsqsig
 2024-06-27, 12:23: Rsqsig
 2024-07-01, 18:19: sig2fwhm, neuronal_signals, estimate_MLE
+2024-07-03, 15:58: calculate_Rsq
+2025-10-08, 14:29: simulate
 """
 
 
@@ -171,7 +173,6 @@ def lin2log(mu, fwhm):
 def sig2fwhm(sig):
     """
     Transform Standard Deviation to Tuning Width
-    
     
         sig  - float; standard deviation of tuning in linear space
         
@@ -401,7 +402,7 @@ def Rsqsig(Rsq, n, p=2, alpha=0.05, meth=''):
     m    = pval.size
     
     # no multiple comparison correction
-    if   meth == '':
+    if meth == '':
         sig   = pval < alpha
     
     # Bonferroni correction for multiple comparisons
@@ -604,10 +605,10 @@ class DataSet:
     
     # function: simulate data set
     #-------------------------------------------------------------------------#
-    def simulate(self, mu, fwhm, mu_b=10, mu_c=1, s2_k=1, s2_j=0.1, s2_i=1, tau=0.001, hrf=None):
+    def simulate(self, mu, fwhm, mu_b=10, mu_c=1, s2_k=1, s2_j=0.1, s2_i=1, tau=0.001, hrf=None, lin=False):
         """
         Simulate Data across Scans, Voxels and Runs
-        Y, S, X, B = ds.simulate(mu, fwhm, mu_b, mu_c, s2_k, s2_j, s2_i, tau, hrf)
+        Y, S, X, B = ds.simulate(mu, fwhm, mu_b, mu_c, s2_k, s2_j, s2_i, tau, hrf, lin)
             
             mu   - 1 x v vector; preferred numerosities in linear space (v = voxels)
             fwhm - 1 x v vector; tuning widths in linear space
@@ -618,6 +619,7 @@ class DataSet:
             s2_i - float; within-run variance
             tau  - float; time constant, serial correlation
             hrf  - list of floats; HRF parameters (default: see "PySPM.spm_hrf")
+            lin  - bool; indicating use of linear tuning functions (see "neuronal_signals")
             
             Y    - n x v x r array; simulated BOLD signals
             S    - n x v x r array; predicted numerosity signals
@@ -644,14 +646,21 @@ class DataSet:
         del EMPRISE
         
         # transform tuning parameters
-        mu_log, sig_log = lin2log(mu, fwhm)
+        if not lin:
+            mu_log, sig_log = lin2log(mu, fwhm)
+        else:
+            mu_lin, sig_lin = (mu, fwhm2sig(fwhm))
         
         # for all runs
         for j in range(r):
             
             # calculate neuronal signals
-            Z, t = neuronal_signals(self.ons[j], self.dur[j], self.stim[j], \
-                                    self.TR, mtr, mu_log, sig_log)
+            if not lin:
+                Z, t = neuronal_signals(self.ons[j], self.dur[j], self.stim[j], \
+                                        self.TR, mtr, mu_log, sig_log, lin=False)
+            else:
+                Z, t = neuronal_signals(self.ons[j], self.dur[j], self.stim[j], \
+                                        self.TR, mtr, mu_lin, sig_lin, lin=True)
             
             # calculate hemodynamic signals
             S[:,:,[j]], t = hemodynamic_signals(Z, t, n, mtr, mto, p=hrf, order=1)
@@ -692,7 +701,7 @@ class DataSet:
             # for k in range(v):
             #     X[:,0,j] = S[:,k,j]
             #     Y[:,:,j] = X[:,:,j]*B[:,:,j] + E
-                    
+        
         # return simulated signals
         self.Y = Y
         del Z, t, E
@@ -704,7 +713,7 @@ class DataSet:
         """
         Maximum Likelihood Estimation of Numerosity Tuning Parameters
         mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =
-            ds.estimate_MLE(avg, corr, order, mu_grid, sig_grid, fwhm_grid, Q_set)
+            ds.estimate_MLE(avg, corr, order, Q_set, mu_grid, sig_grid, fwhm_grid)
             
             avg       - list of bool; indicating whether signals are averaged
                                       (see "EMPRISE.average_signals")
@@ -915,6 +924,7 @@ class DataSet:
                 sig_log = sig
                 fwhms   = log2lin(mu_log, sig_log)[1]
             if lin:
+                mu_lin  = mus
                 sig_lin = fwhm2sig(fwhms)
             MLL  = np.zeros((fwhms.size,v))
             beta = np.zeros((fwhms.size,v))
@@ -927,7 +937,7 @@ class DataSet:
             if not lin:
                 Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mu_log, sig_log, lin=False)
             else:
-                Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mus, sig_lin, lin=True)
+                Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mu_lin, sig_lin, lin=True)
             if True:
                 S, t = hemodynamic_signals(Z, t, n, mtr, mto, p=None, order=o)
             del Z, t
@@ -989,11 +999,11 @@ class DataSet:
 
     # function: maximum likelihood estimation (refined grid search)
     #-------------------------------------------------------------------------#
-    def estimate_MLE_rgs(self, avg=[False, False], corr='iid', order=1, mu_grid=None, fwhm_grid=None, Q_set=None):
+    def estimate_MLE_rgs(self, avg=[False, False], corr='iid', order=1, Q_set=None, mu_grid=None, fwhm_grid=None):
         """
         Maximum Likelihood Estimation using Refined Grid Search
         mu_est, fwhm_est, beta_est, MLL_est, MLL_null, MLL_const, corr_est =
-            ds.estimate_MLE(avg, corr, order, mu_grid, fwhm_grid, Q_set)
+            ds.estimate_MLE(avg, corr, order, Q_set, mu_grid, fwhm_grid)
             
             avg       - list of bool; indicating whether signals are averaged
                                       (see "EMPRISE.average_signals")
@@ -1001,10 +1011,10 @@ class DataSet:
                                 "i.i.d. errors" or "AR(1) model")
             order     - int; order of the HRF model, must be 1, 2 or 3
                              (see "PySPM.spm_get_bf")
-            mu_grid   - list of floats; initial values [mu_0, dmu_0]
-            fwhm_grid - list of floats; initial values [fwhm_0, dfwhm_0]
             Q_set     - list of matrices; covariance components for AR estimation
                                           (default: see below, part 2)
+            mu_grid   - list of floats; initial values [mu_0, dmu_0]
+            fwhm_grid - list of floats; initial values [fwhm_0, dfwhm_0]
             
             mu_est    - 1 x v vector; estimated numerosities in linear space
             fwhm_est  - 1 x v vector; estimated tuning widths in linear space
@@ -1235,10 +1245,10 @@ class DataSet:
     
     # function: calculation of R-squared
     #-------------------------------------------------------------------------#
-    def calculate_Rsq(self, mu, fwhm, beta, avg=[False, False], corr='iid', order=1):
+    def calculate_Rsq(self, mu, fwhm, beta, avg=[False, False], corr='iid', order=1, lin=False):
         """
         Calculation of R-Squared for Numerosity Model
-        Rsq = ds.calculate_Rsq(mu, fwhm, beta, avg, corr, order)
+        Rsq = ds.calculate_Rsq(mu, fwhm, beta, avg, corr, order, lin)
             
             mu    - 1 x v vector; numerosities in linear space
             fwhm  - 1 x v vector; tuning widths in linear space
@@ -1246,7 +1256,8 @@ class DataSet:
             avg   - list of bool; indicating signal averaging
             corr  - string; method for serial correlations
             order - int; order of the HRF model
-                   (for "avg", "corr", "order", see "estimate_MLE")
+            lin   - bool; indicating use of linear tuning functions
+                   (for "avg", "corr", "order", "lin", see "estimate_MLE")
         
         Note: The scaling factor is re-estimated when calculating the model fit,
         so any input for "beta" is being ignored.
@@ -1343,12 +1354,19 @@ class DataSet:
             
             # obtain tuning parameters
             mu_log, sig_log = lin2log(mu[k], fwhm[k])
+            mu_lin, sig_lin = (mu[k], fwhm2sig(fwhm[k]))
             mu_log  = np.array([mu_log])
             sig_log = np.array([sig_log])
+            mu_lin  = np.array([mu_lin])
+            sig_lin = np.array([sig_lin])
             
             # generate expected signals
-            Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mu_log, sig_log)
-            S, t = hemodynamic_signals(Z, t, n, mtr, mto, p=None, order=o)
+            if not lin:
+                Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mu_log, sig_log, lin=False)
+            else:
+                Z, t = neuronal_signals(ons, dur, stim, self.TR, mtr, mu_lin, sig_lin, lin=True)
+            if True:
+                S, t = hemodynamic_signals(Z, t, n, mtr, mto, p=None, order=o)
             del Z, t
             
             # generate design & predict signals

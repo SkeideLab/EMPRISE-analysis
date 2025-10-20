@@ -67,7 +67,7 @@ class GLM:
             else:
                 self.V   = V                # If P was supplied, leave V
                 self.P   = P                # at None and use specified P.
-                self.iid = False            # This avoid matrix inversion.
+                self.iid = False            # This avoids matrix inversion.
         else:
             self.V   = V                    # If V was supplied, use it
             self.P   = np.linalg.inv(V)     # and calculate P as inv(V).
